@@ -450,7 +450,8 @@ namespace steemit {
                     if (o.parent_author == STEEMIT_ROOT_POST_PARENT) {
                         auto post_bandwidth = band->average_bandwidth;
 
-                        if (_db.has_hardfork(STEEMIT_HARDFORK_0_12__176)) {
+                        if (_db.has_hardfork(STEEMIT_HARDFORK_0_12__176) &&
+                            !_db.has_hardfork(STEEMIT_HARDFORK_0_17__78)) {
                             auto post_delta_time = std::min(
                                     now.sec_since_epoch() -
                                     band->last_bandwidth_update.sec_since_epoch(), STEEMIT_POST_AVERAGE_WINDOW);
