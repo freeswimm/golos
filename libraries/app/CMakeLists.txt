@@ -20,7 +20,7 @@ else()
             )
 endif()
 
-target_link_libraries(golos_app golos_chain golos_protocol golos_tags golos_follow golos_mf_plugins fc graphene_net graphene_time graphene_utilities)
+target_link_libraries(golos_app golos_chain golos_protocol golos_tags golos_follow golos_mf_plugins fc graphene_net golos_time graphene_utilities)
 target_include_directories(golos_app
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
