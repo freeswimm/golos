@@ -22,12 +22,10 @@
  * THE SOFTWARE.
  */
 #include <steemit/app/api.hpp>
-
+#include <steemit/time/time.hpp>
 #include <steemit/chain/database_exceptions.hpp>
 
 #include <graphene/net/exceptions.hpp>
-
-#include <graphene/time/time.hpp>
 
 #include <fc/smart_ref_impl.hpp>
 
@@ -295,7 +293,13 @@ namespace steemit {
                                 _force_validate = true;
                             }
 
-                            graphene::time::now();
+                            if (_options->at("enable-ntp").as<bool>()) {
+                                ilog("Enable NTP");
+                                steemit::time::set_ntp_enabled(true);
+                            } else {
+                                ilog("Launching with NTP disabled");
+                            }
+
                         } else {
                             ilog("Starting Golos node in read mode.");
                             _chain_db->open(_data_dir /
@@ -433,7 +437,7 @@ namespace steemit {
                                                 ("n", blk_msg.block.block_num()));
                             }
 
-                            time_point_sec now = graphene::time::now();
+                            time_point_sec now = steemit::time::now();
 
                             uint64_t max_accept_time = now.sec_since_epoch();
                             max_accept_time += allow_future_time;
@@ -799,9 +803,9 @@ namespace steemit {
                     } FC_CAPTURE_AND_RETHROW((block_id))
                 }
 
-                /** returns graphene::time::now() */
+                /** returns steemit::time::now() */
                 virtual fc::time_point_sec get_blockchain_now() override {
-                    return graphene::time::now();
+                    return steemit::time::now();
                 }
 
                 virtual item_hash_t get_head_block_id() const override {
@@ -831,6 +835,8 @@ namespace steemit {
                     if (_chain_db) {
                         _chain_db->close();
                     }
+
+                    steemit::time::set_ntp_enabled(false);
                 }
 
                 application *_self;
@@ -915,7 +921,8 @@ namespace steemit {
                     ("resync-blockchain", "Delete all blocks and re-sync with network from scratch")
                     ("force-validate", "Force validation of all transactions")
                     ("read-only", "Node will not connect to p2p network and can only read from the chain state")
-                    ("check-locks", "Check correctness of chainbase locking");
+                    ("check-locks", "Check correctness of chainbase locking")
+                    ("enable-ntp", bpo::value<bool>()->default_value(false), "Enable built-in NTP client");
             command_line_options.add(_cli_options);
             configuration_file_options.add(_cfg_options);
         }

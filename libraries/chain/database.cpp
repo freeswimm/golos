@@ -1031,7 +1031,7 @@ namespace steemit {
                     return assets;
                 }
 
-                const feed_history_object &median_price = get_feed_history().current_median_history;
+                const auto &median_price = get_feed_history().current_median_history;
                 const auto &gpo = get_dynamic_global_properties();
 
                 if (!median_price.is_null()) {

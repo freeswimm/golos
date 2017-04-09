@@ -1,24 +1,24 @@
-file(GLOB HEADERS "include/graphene/time/*.hpp")
+file(GLOB HEADERS "include/steemit/time/*.hpp")
 
 if(BUILD_SHARED_LIBRARIES)
-    add_library(graphene_time SHARED
+    add_library(golos_time SHARED
             time.cpp
             )
 else()
-    add_library(graphene_time STATIC
+    add_library(golos_time STATIC
             time.cpp
             )
 endif()
 
-target_link_libraries(graphene_time fc)
-target_include_directories(graphene_time
+target_link_libraries(golos_time fc)
+target_include_directories(golos_time
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 install(TARGETS
-        graphene_time
+        golos_time
 
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
         )
-install(FILES ${HEADERS} DESTINATION "include/graphene/time")
+install(FILES ${HEADERS} DESTINATION "include/steemit/time")
