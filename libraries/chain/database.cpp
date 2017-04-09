@@ -1031,7 +1031,7 @@ namespace steemit {
                     return assets;
                 }
 
-                const auto &median_price = get_feed_history().current_median_history;
+                const feed_history_object &median_price = get_feed_history().current_median_history;
                 const auto &gpo = get_dynamic_global_properties();
 
                 if (!median_price.is_null()) {
@@ -2444,7 +2444,7 @@ namespace steemit {
             const auto &request_by_date = get_index<convert_request_index>().indices().get<by_conversion_date>();
             auto itr = request_by_date.begin();
 
-            const auto &fhistory = get_feed_history();
+            const feed_history_object &fhistory = get_feed_history();
             if (fhistory.current_median_history.is_null()) {
                 return;
             }
@@ -3487,7 +3487,7 @@ namespace steemit {
                                           dgp.current_sbd_supply *
                                           get_feed_history().current_median_history);
 
-                    auto median_price = get_feed_history().current_median_history;
+                    auto feed_history_object = get_feed_history().current_median_history;
 
                     if (!median_price.is_null() &&
                         has_hardfork(STEEMIT_HARDFORK_0_14__230)) {
