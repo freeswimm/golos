@@ -212,8 +212,10 @@ namespace steemit {
             if (o.owner) {
 #ifndef STEEMIT_BUILD_TESTNET
                 if (_db.has_hardfork(STEEMIT_HARDFORK_0_11)) {
-                             FC_ASSERT( _db.head_block_time() - account_auth.last_owner_update > STEEMIT_OWNER_UPDATE_LIMIT, "Owner authority can only be updated once an hour." );
-                             }
+                    FC_ASSERT(_db.head_block_time() -
+                              account_auth.last_owner_update >
+                              STEEMIT_OWNER_UPDATE_LIMIT, "Owner authority can only be updated once an hour.");
+                }
 #endif
 
                 if ((_db.has_hardfork(STEEMIT_HARDFORK_0_15__465) ||
@@ -571,12 +573,20 @@ namespace steemit {
                 {
                     const auto &comment = *itr;
 
-                    if (_db.has_hardfork(STEEMIT_HARDFORK_0_14__306))
+                    if (_db.has_hardfork(STEEMIT_HARDFORK_0_17__85)) {
+                        // This will be moved to the witness plugin in a later release
+                        if (_db.is_producing()) {
+                            // For now, use the same editting rules, but implement it as a soft fork.
+                            FC_ASSERT(comment.mode !=
+                                      archived, "The comment is archived.");
+                        }
+                    } else if (_db.has_hardfork(STEEMIT_HARDFORK_0_14__306)) {
                         FC_ASSERT(comment.mode !=
                                   archived, "The comment is archived.");
-                    else if (_db.has_hardfork(STEEMIT_HARDFORK_0_10))
+                    } else if (_db.has_hardfork(STEEMIT_HARDFORK_0_10)) {
                         FC_ASSERT(comment.last_payout ==
                                   fc::time_point_sec::min(), "Can only edit during the first 24 hours.");
+                    }
 
                     _db.modify(comment, [&](comment_object &com) {
                         com.last_update = _db.head_block_time();
@@ -831,8 +841,9 @@ namespace steemit {
             database &_db = db();
 
             const account_object &from_account = _db.get_account(o.from);
-            const account_object &to_account = o.to.size() ? _db.get_account(o.to)
-                                                 : from_account;
+            const account_object &to_account = o.to.size()
+                                               ? _db.get_account(o.to)
+                                               : from_account;
 
             FC_ASSERT(_db.get_balance(from_account, STEEM_SYMBOL) >=
                       o.amount, "Account does not have sufficient GOLOS for transfer.");
