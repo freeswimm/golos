@@ -3909,8 +3909,7 @@ BOOST_FIXTURE_TEST_SUITE(operation_tests, clean_database_fixture)
       uint64_t nonce1 = nonce;
       idump( (nonce1) );
 #else
-            //uint64_t nonce1 = 98;
-            //uint64_t nonce1 = 79;
+            //uint64_t nonce1 = 45;
 #endif
 
             generate_block();
@@ -3925,7 +3924,7 @@ BOOST_FIXTURE_TEST_SUITE(operation_tests, clean_database_fixture)
       uint64_t nonce2 = nonce;
       idump( (nonce2) );
 #else
-            uint64_t nonce2 = 36;
+            uint64_t nonce2 = 69;
 #endif
 
 #ifdef CALCULATE_NONCES
@@ -3938,7 +3937,7 @@ BOOST_FIXTURE_TEST_SUITE(operation_tests, clean_database_fixture)
       uint64_t nonce3 = nonce;
       idump( (nonce3) );
 #else
-            uint64_t nonce3 = 357;
+            uint64_t nonce3 = 78;
 #endif
 
 #ifdef CALCULATE_NONCES
@@ -3951,7 +3950,7 @@ BOOST_FIXTURE_TEST_SUITE(operation_tests, clean_database_fixture)
       uint64_t nonce4 = nonce;
       idump( (nonce4) );
 #else
-            uint64_t nonce4 = 394;
+            uint64_t nonce4 = 119;
 #endif
 
             // Test with nonce that doesn't match work, should fail
@@ -4046,7 +4045,7 @@ BOOST_FIXTURE_TEST_SUITE(operation_tests, clean_database_fixture)
       uint64_t nonce5 = nonce;
       idump( (nonce5) );
 #else
-            uint32_t nonce5 = 364;
+            uint32_t nonce5 = 234;
 #endif
 
             BOOST_TEST_MESSAGE("Submit pow from existing account without witness object.");
@@ -4090,7 +4089,7 @@ BOOST_FIXTURE_TEST_SUITE(operation_tests, clean_database_fixture)
       uint64_t nonce6 = nonce;
       idump( (nonce6) );
 #else
-            uint64_t nonce6 = 404;
+            uint64_t nonce6 = 321;
 #endif
 
 #ifdef CALCULATE_NONCES
@@ -4103,7 +4102,7 @@ BOOST_FIXTURE_TEST_SUITE(operation_tests, clean_database_fixture)
       uint64_t nonce7 = nonce;
       idump( (nonce7) );
 #else
-            uint64_t nonce7 = 496;
+            uint64_t nonce7 = 326;
 #endif
 
             // Test with wrong previous block id

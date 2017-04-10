@@ -471,6 +471,20 @@ namespace steemit {
                                               STEEMIT_POST_AVERAGE_WINDOW;
                             post_bandwidth = (old_weight + STEEMIT_100_PERCENT);
                             reward_weight = uint16_t(std::min(
+                                    (STEEMIT_POST_WEIGHT_CONSTANT_PRE_HF_17 *
+                                     STEEMIT_100_PERCENT) /
+                                    (post_bandwidth.value *
+                                     post_bandwidth.value), uint64_t(STEEMIT_100_PERCENT)));
+                        } else if (_db.has_hardfork(STEEMIT_HARDFORK_0_17__78)) {
+                            auto post_delta_time = std::min(
+                                    now.sec_since_epoch() -
+                                    band->last_bandwidth_update.sec_since_epoch(), STEEMIT_POST_AVERAGE_WINDOW);
+                            auto old_weight = (post_bandwidth *
+                                               (STEEMIT_POST_AVERAGE_WINDOW -
+                                                post_delta_time)) /
+                                              STEEMIT_POST_AVERAGE_WINDOW;
+                            post_bandwidth = (old_weight + STEEMIT_100_PERCENT);
+                            reward_weight = uint16_t(std::min(
                                     (STEEMIT_POST_WEIGHT_CONSTANT *
                                      STEEMIT_100_PERCENT) /
                                     (post_bandwidth.value *
