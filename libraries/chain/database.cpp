@@ -2098,9 +2098,6 @@ namespace steemit {
             /// don't allow any content to get paid out until the website is ready to launch
             /// and people have had a week to start posting.  The first cashout will be the biggest because it
             /// will represent 2+ months of rewards.
-//            if (!has_hardfork(STEEMIT_FIRST_CASHOUT_TIME)) {
-//                return;
-//            }
 
             if (head_block_time() <= STEEMIT_FIRST_CASHOUT_TIME) {
                 return;
