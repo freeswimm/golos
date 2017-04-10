@@ -27,6 +27,7 @@ if(BUILD_SHARED_LIBRARIES)
             shared_authority.cpp
             #            transaction_object.cpp
             block_log.cpp
+            witness_schedule.cpp
 
             util/reward.cpp
 
@@ -57,6 +58,7 @@ if(BUILD_SHARED_LIBRARIES)
             include/steemit/chain/steem_objects.hpp
             include/steemit/chain/transaction_object.hpp
             include/steemit/chain/witness_objects.hpp
+            include/steemit/chain/witness_schedule.hpp
 
             include/steemit/chain/util/asset.hpp
             include/steemit/chain/util/reward.hpp
@@ -78,6 +80,7 @@ else()
             shared_authority.cpp
             #            transaction_object.cpp
             block_log.cpp
+            witness_schedule.cpp
 
             util/reward.cpp
 
@@ -108,6 +111,7 @@ else()
             include/steemit/chain/steem_objects.hpp
             include/steemit/chain/transaction_object.hpp
             include/steemit/chain/witness_objects.hpp
+            include/steemit/chain/witness_schedule.hpp
 
             include/steemit/chain/util/asset.hpp
             include/steemit/chain/util/reward.hpp

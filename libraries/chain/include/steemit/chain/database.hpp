@@ -341,8 +341,6 @@ namespace steemit {
 
             void adjust_total_payout(const comment_object &a, const asset &sbd, const asset &curator_sbd_value);
 
-            void update_witness_schedule();
-
             void adjust_liquidity_reward(const account_object &owner, const asset &volume, bool is_bid);
 
             void adjust_balance(const account_object &a, const asset &delta);
@@ -531,8 +529,6 @@ namespace steemit {
 
             void create_block_summary(const signed_block &next_block);
 
-            void update_witness_schedule4();
-
             void update_median_witness_props();
 
             void clear_null_account_balance();
@@ -548,8 +544,6 @@ namespace steemit {
             void clear_expired_orders();
 
             void process_header_extensions(const signed_block &next_block);
-
-            void reset_virtual_schedule_time();
 
             void init_hardforks();
 
