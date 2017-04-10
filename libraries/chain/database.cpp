@@ -3434,7 +3434,7 @@ namespace steemit {
                                           dgp.current_sbd_supply *
                                           get_feed_history().current_median_history);
 
-                    auto feed_history_object = get_feed_history().current_median_history;
+                    auto median_price = get_feed_history().current_median_history;
 
                     if (!median_price.is_null() &&
                         has_hardfork(STEEMIT_HARDFORK_0_14__230)) {
