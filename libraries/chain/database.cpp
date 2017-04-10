@@ -1961,14 +1961,17 @@ namespace steemit {
             ctx.max_sbd = comment.max_accepted_payout;
         }
 
-        void database::cashout_comment_helper(const comment_object &comment) {
+        void database::cashout_comment_helper(util::comment_reward_context &ctx, const comment_object &comment) {
             try {
                 const auto &cat = get_category(comment.category);
 
                 if (comment.net_rshares > 0) {
-                    util::comment_reward_context ctx;
                     fill_comment_reward_context_local_state(ctx, comment);
-                    fill_comment_reward_context_global_state(ctx, *this);
+
+                    if (!has_hardfork(STEEMIT_HARDFORK_0_17__89)) {
+                        fill_comment_reward_context_global_state(ctx, *this);
+                    }
+
                     const share_type reward = util::get_rshare_reward(ctx);
                     uint128_t reward_tokens = uint128_t(reward.value);
 
@@ -2103,6 +2106,9 @@ namespace steemit {
                 return;
             }
 
+            util::comment_reward_context ctx;
+            fill_comment_reward_context_global_state(ctx, *this);
+
             int count = 0;
             const auto &cidx = get_index<comment_index>().indices().get<by_cashout_time>();
             const auto &com_by_root = get_index<comment_index>().indices().get<by_root>();
@@ -2115,7 +2121,7 @@ namespace steemit {
                        itr->root_comment == current->root_comment) {
                     const auto &comment = *itr;
                     ++itr;
-                    cashout_comment_helper(comment);
+                    cashout_comment_helper(ctx, comment);
                     ++count;
                 }
                 current = cidx.begin();
@@ -4054,17 +4060,17 @@ namespace steemit {
                 case STEEMIT_HARDFORK_0_1:
                     perform_vesting_share_split(10000);
 #ifdef STEEMIT_BUILD_TESTNET
-                {
-                    custom_operation test_op;
-                    string op_msg = "Testnet: Hardfork applied";
-                    test_op.data = vector<char>(op_msg.begin(), op_msg.end());
-                    test_op.required_auths.insert(STEEMIT_INIT_MINER_NAME);
-                    operation op = test_op;   // we need the operation object to live to the end of this scope
-                    operation_notification note(op);
-                    notify_pre_apply_operation(note);
-                    notify_post_apply_operation(note);
-                }
-                break;
+                    {
+                        custom_operation test_op;
+                        string op_msg = "Testnet: Hardfork applied";
+                        test_op.data = vector<char>(op_msg.begin(), op_msg.end());
+                        test_op.required_auths.insert(STEEMIT_INIT_MINER_NAME);
+                        operation op = test_op;   // we need the operation object to live to the end of this scope
+                        operation_notification note(op);
+                        notify_pre_apply_operation(note);
+                        notify_post_apply_operation(note);
+                    }
+                    break;
 #endif
                     break;
                 case STEEMIT_HARDFORK_0_2:
