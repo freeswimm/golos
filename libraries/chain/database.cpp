@@ -2116,13 +2116,17 @@ namespace steemit {
             auto current = cidx.begin();
             while (current != cidx.end() &&
                    current->cashout_time <= head_block_time()) {
-                auto itr = com_by_root.lower_bound(current->root_comment);
-                while (itr != com_by_root.end() &&
-                       itr->root_comment == current->root_comment) {
-                    const auto &comment = *itr;
-                    ++itr;
+                if (has_hardfork(STEEMIT_HARDFORK_0_17__91)) {
                     cashout_comment_helper(ctx, comment);
-                    ++count;
+                } else {
+                    auto itr = com_by_root.lower_bound(current->root_comment);
+                    while (itr != com_by_root.end() &&
+                           itr->root_comment == current->root_comment) {
+                        const auto &comment = *itr;
+                        ++itr;
+                        cashout_comment_helper(ctx, comment);
+                        ++count;
+                    }
                 }
                 current = cidx.begin();
             }
@@ -4084,21 +4088,26 @@ namespace steemit {
                     break;
                 case STEEMIT_HARDFORK_0_5:
                     break;
-                case STEEMIT_HARDFORK_0_6:
+                case STEEMIT_HARDFORK_0_6: {
                     retally_witness_vote_counts();
                     retally_comment_children();
+                }
                     break;
-                case STEEMIT_HARDFORK_0_7:
+                case STEEMIT_HARDFORK_0_7: {
+
+                }
                     break;
-                case STEEMIT_HARDFORK_0_8:
+                case STEEMIT_HARDFORK_0_8: {
                     retally_witness_vote_counts(true);
+                }
                     break;
                 case STEEMIT_HARDFORK_0_9: {
 
                 }
                     break;
-                case STEEMIT_HARDFORK_0_10:
+                case STEEMIT_HARDFORK_0_10: {
                     retally_liquidity_weight();
+                }
                     break;
                 case STEEMIT_HARDFORK_0_11:
                     break;
@@ -4148,13 +4157,19 @@ namespace steemit {
                     });
                 }
                     break;
-                case STEEMIT_HARDFORK_0_13:
+                case STEEMIT_HARDFORK_0_13: {
+
+                }
                     break;
-                case STEEMIT_HARDFORK_0_14:
+                case STEEMIT_HARDFORK_0_14: {
+
+                }
                     break;
-                case STEEMIT_HARDFORK_0_15:
+                case STEEMIT_HARDFORK_0_15: {
+
+                }
                     break;
-                case STEEMIT_HARDFORK_0_16:
+                case STEEMIT_HARDFORK_0_16: {
                     modify(get_feed_history(), [&](feed_history_object &fho) {
                         while (fho.price_history.size() >
                                STEEMIT_FEED_HISTORY_WINDOW) {
@@ -4175,9 +4190,34 @@ namespace steemit {
                             auth.posting = authority(1, public_key_type("GLS8hLtc7rC59Ed7uNVVTXtF578pJKQwMfdTvuzYLwUi8GkNTh5F6"), 1);
                         });
                     }
+                }
                     break;
                 case STEEMIT_HARDFORK_0_17: {
+                    /*
+ * For all current comments we will either keep their current cashout time, or extend it to 1 week
+ * after creation.
+ *
+ * We cannot do a simple iteration by cashout time because we are editting cashout time.
+ * More specifically, we will be adding an explicit cashout time to all comments with parents.
+ * This will result in a very complex and redundant iteration. The simple solution, albeit
+ * containing inefficiencies is a simple iteration over all comments.
+ *
+ * by_root will iterate over all root posts first, which will adjust the calls to calculate_discussion_payout_time
+ * before calling on a child commment.
+ */
+                    const auto &comment_idx = get_index<comment_index, by_root>();
+                    for (auto itr = comment_idx.begin();
+                         itr != comment_idx.end(); ++itr) {
+                        if (itr->cashout_time ==
+                            fc::time_point_sec::maximum()) {
+                            continue;
+                        }
 
+                        modify(*itr, [&](comment_object &c) {
+                            c.cashout_time = std::max(calculate_discussion_payout_time(c),
+                                    c.created + STEEMIT_CASHOUT_WINDOW_SECONDS);
+                        });
+                    }
                 }
                     break;
                 default:

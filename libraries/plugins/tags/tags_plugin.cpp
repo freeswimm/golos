@@ -127,7 +127,7 @@ namespace steemit {
                         ++count;
                         if (count > tag_limit ||
                             lower_tags.size() > tag_limit) {
-                                break;
+                            break;
                         }
                         if (tag == "") {
                             continue;
@@ -313,8 +313,9 @@ namespace steemit {
                     if (voter.id == author.id) {
                         return;
                     } /// ignore votes for yourself
-                    if (c.parent_author.size())
-                        return; /// only count top level posts
+                    if (c.parent_author.size()) {
+                        return;
+                    } /// only count top level posts
 
                     const auto &stat = get_or_create_peer_stats(voter.id, author.id);
                     _db.modify(stat, [&](peer_stats_object &obj) {
@@ -384,9 +385,11 @@ namespace steemit {
                     auto itr = idx.lower_bound(boost::make_tuple(auth.id));
                     while (itr != idx.end() && itr->author == auth.id) {
                         const auto &tobj = *itr;
+                        const auto &stats = get_stats(tobj.tag);
                         const auto *obj = _db.find<comment_object>(itr->comment);
                         ++itr;
                         if (!obj) {
+                            remove_stats(tobj, stats);
                             _db.remove(tobj);
                         }
                     }

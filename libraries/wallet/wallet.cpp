@@ -2092,7 +2092,13 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
         }
 
         app::state wallet_api::get_state(string url) {
-            return my->_remote_db->get_state(url);
+            auto before = fc::time_point::now();
+            auto s = my->_remote_db->get_state(url);
+            auto after = fc::time_point::now();
+
+            ilog("Execution Time: ${d}", ("d", after - before));
+
+            return s;
         }
 
         vector<withdraw_route> wallet_api::get_withdraw_routes(string account, withdraw_route_type type) const {
