@@ -2054,7 +2054,9 @@ namespace steemit {
                     c.total_vote_weight = 0;
                     c.max_cashout_time = fc::time_point_sec::maximum();
 
-                    if (c.parent_author == STEEMIT_ROOT_POST_PARENT) {
+                    if (has_hardfork(STEEMIT_HARDFORK_0_17__91)) {
+                        c.cashout_time = fc::time_point_sec::maximum();
+                    } else if (c.parent_author == STEEMIT_ROOT_POST_PARENT) {
                         if (has_hardfork(STEEMIT_HARDFORK_0_12__177) &&
                             c.last_payout == fc::time_point_sec::min()) {
                             c.cashout_time = head_block_time() +
@@ -4205,7 +4207,7 @@ namespace steemit {
  * by_parent will iterate over all root posts first, which will adjust the calls to calculate_discussion_payout_time
  * before calling on a child commment.
  */
-                                const auto& comment_idx = get_index< comment_index, by_parent >();
+                    const auto &comment_idx = get_index<comment_index, by_parent>();
                     for (auto itr = comment_idx.begin();
                          itr != comment_idx.end(); ++itr) {
                         auto cashout_time = calculate_discussion_payout_time(*itr);
