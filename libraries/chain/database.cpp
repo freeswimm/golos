@@ -4196,27 +4196,47 @@ namespace steemit {
                     break;
                 case STEEMIT_HARDFORK_0_17: {
                     /*
- * For all current comments we will either keep their current cashout time, or extend it to 1 week
- * after creation.
- *
- * We cannot do a simple iteration by cashout time because we are editting cashout time.
- * More specifically, we will be adding an explicit cashout time to all comments with parents.
- * This will result in a very complex and redundant iteration. The simple solution, albeit
- * containing inefficiencies is a simple iteration over all comments.
- *
- * by_parent will iterate over all root posts first, which will adjust the calls to calculate_discussion_payout_time
- * before calling on a child commment.
- */
-                    const auto &comment_idx = get_index<comment_index, by_parent>();
-                    for (auto itr = comment_idx.begin();
-                         itr != comment_idx.end(); ++itr) {
-                        auto cashout_time = calculate_discussion_payout_time(*itr);
-                        if (cashout_time == fc::time_point_sec::maximum()) {
-                            continue;
-                        }
+                    * For all current comments we will either keep their current cashout time, or extend it to 1 week
+                    * after creation.
+                            *
+                            * We cannot do a simple iteration by cashout time because we are editting cashout time.
+                                                                                                              * More specifically, we will be adding an explicit cashout time to all comments with parents.
+                                                                                                                                                                                                   * To find all discussions that have not been paid out we fir iterate over posts by cashout time.
+                                                                                                                                                                                                                                                                                              * Before the hardfork these are all root posts. Iterate over all of their children, adding each
+                    * to a specific list. Next, update payout times for all discussions on the root post. This defines
+                    * the min cashout time for each child in the discussion. Then iterate over the children and set
+                    * their cashout time in a similar way, grabbing the root post as their inherent cashout time.
+                                                                                                            */
+                    const auto &comment_idx = get_index<comment_index, by_cashout_time>();
+                    const auto &by_root_idx = get_index<comment_index, by_root>();
+                    vector<const comment_object *> root_posts;
+                    root_posts.reserve(60000);
+                    vector<const comment_object *> replies;
+                    replies.reserve(100000);
 
+                    for (auto itr = comment_idx.begin();
+                         itr != comment_idx.end() && itr->cashout_time <
+                                                     fc::time_point_sec::maximum(); ++itr) {
+
+                        root_posts.push_back(&(*itr));
+
+                        for (auto reply_itr = by_root_idx.lower_bound(itr->id);
+                             reply_itr != by_root_idx.end() &&
+                             reply_itr->root_comment == itr->id; ++reply_itr) {
+                            replies.push_back(&(*reply_itr));
+                        }
+                    }
+
+                    for (auto itr : root_posts) {
                         modify(*itr, [&](comment_object &c) {
-                            c.cashout_time = std::max(cashout_time,
+                            c.cashout_time = std::max(c.created +
+                                                      STEEMIT_CASHOUT_WINDOW_SECONDS, c.cashout_time);
+                        });
+                    }
+
+                    for (auto itr : replies) {
+                        modify(*itr, [&](comment_object &c) {
+                            c.cashout_time = std::max(calculate_discussion_payout_time(c),
                                     c.created + STEEMIT_CASHOUT_WINDOW_SECONDS);
                         });
                     }
@@ -4231,9 +4251,12 @@ namespace steemit {
                                       1, "Hardfork being applied out of order", ("hardfork", hardfork)("hfp.last_hardfork", hfp.last_hardfork));
                 FC_ASSERT(hfp.processed_hardforks.size() ==
                           hardfork, "Hardfork being applied out of order");
-                hfp.processed_hardforks.push_back(_hardfork_times[hardfork]);
-                hfp.last_hardfork = hardfork;
-                hfp.current_hardfork_version = _hardfork_versions[hardfork];
+                hfp.processed_hardforks.
+                        push_back(_hardfork_times[hardfork]);
+                hfp.
+                        last_hardfork = hardfork;
+                hfp.
+                        current_hardfork_version = _hardfork_versions[hardfork];
                 FC_ASSERT(hfp.processed_hardforks[hfp.last_hardfork] ==
                           _hardfork_times[hfp.last_hardfork], "Hardfork processing failed sanity check...");
             });
@@ -4529,5 +4552,6 @@ namespace steemit {
                 }
             }
         }
+
     }
 } //steemit::chain
