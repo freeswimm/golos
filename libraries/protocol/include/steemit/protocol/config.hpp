@@ -26,7 +26,7 @@
 #define STEEMIT_CASHOUT_WINDOW_SECONDS          (60*60) /// 1 hour
 #define STEEMIT_CASHOUT_WINDOW_SECONDS_PRE_HF12 (STEEMIT_CASHOUT_WINDOW_SECONDS)
 #define STEEMIT_CASHOUT_WINDOW_SECONDS_PRE_HF17 (STEEMIT_CASHOUT_WINDOW_SECONDS_PRE_HF12)
-#define STEEMIT_SECOND_CASHOUT_WINDOW           (60*60*5) /// 5 hours
+#define STEEMIT_SECOND_CASHOUT_WINDOW_SECONDS   (60*60*5) /// 5 hours
 #define STEEMIT_MAX_CASHOUT_WINDOW_SECONDS      (60*60*2) /// 2 hours
 #define STEEMIT_VOTE_CHANGE_LOCKOUT_PERIOD      (60*10) /// 10 minutes
 
@@ -228,7 +228,7 @@
 #define STEEMIT_CASHOUT_WINDOW_SECONDS_PRE_HF12 (60*60*24)  /// 1 day
 #define STEEMIT_CASHOUT_WINDOW_SECONDS_PRE_HF17 STEEMIT_CASHOUT_WINDOW_SECONDS_PRE_HF12
 #define STEEMIT_CASHOUT_WINDOW_SECONDS          (60*60*24*7)  /// 1 week
-#define STEEMIT_SECOND_CASHOUT_WINDOW           (60*60*24*30) /// 30 days
+#define STEEMIT_SECOND_CASHOUT_WINDOW_SECONDS   (60*60*24*30) /// 30 days
 #define STEEMIT_MAX_CASHOUT_WINDOW_SECONDS      (60*60*24*14) /// 2 weeks
 #define STEEMIT_VOTE_CHANGE_LOCKOUT_PERIOD      (60*60*2) /// 2 hours
 
@@ -334,7 +334,7 @@
 #define STEEMIT_APR_PERCENT_MULTIPLY_PER_BLOCK          ( (uint64_t( 0x5ccc ) << 0x20) \
                                                         | (uint64_t( 0xe802 ) << 0x10) \
                                                         | (uint64_t( 0xde5f )        ) \
-                                                        )
+
 // chosen to be the maximal value such that STEEMIT_APR_PERCENT_MULTIPLY_PER_BLOCK * 2**64 * 100000 < 2**128
 #define STEEMIT_APR_PERCENT_SHIFT_PER_BLOCK             87
 

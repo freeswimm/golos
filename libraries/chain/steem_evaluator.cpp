@@ -1258,7 +1258,7 @@ namespace steemit {
                             !_db.has_hardfork(STEEMIT_HARDFORK_0_13__257)) {
                             new_cashout_time_sec =
                                     _db.head_block_time().sec_since_epoch() +
-                                    STEEMIT_CASHOUT_WINDOW_SECONDS;
+                                    STEEMIT_CASHOUT_WINDOW_SECONDS_PRE_HF17;
                         } else {
                             new_cashout_time_sec =
                                     _db.head_block_time().sec_since_epoch() +
@@ -1298,7 +1298,7 @@ namespace steemit {
                             if (_db.has_hardfork(STEEMIT_HARDFORK_0_12__177) &&
                                 c.last_payout > fc::time_point_sec::min()) {
                                 c.cashout_time = c.last_payout +
-                                                 STEEMIT_SECOND_CASHOUT_WINDOW;
+                                                 STEEMIT_SECOND_CASHOUT_WINDOW_SECONDS;
                             } else {
                                 c.cashout_time = fc::time_point_sec(std::min(uint32_t(avg_cashout_sec.to_uint64()), c.max_cashout_time.sec_since_epoch()));
                             }
@@ -1470,7 +1470,7 @@ namespace steemit {
                             !_db.has_hardfork(STEEMIT_HARDFORK_0_13__257)) {
                             new_cashout_time_sec =
                                     _db.head_block_time().sec_since_epoch() +
-                                    STEEMIT_CASHOUT_WINDOW_SECONDS;
+                                    STEEMIT_CASHOUT_WINDOW_SECONDS_PRE_HF17;
                         } else {
                             new_cashout_time_sec =
                                     _db.head_block_time().sec_since_epoch() +
@@ -1513,11 +1513,12 @@ namespace steemit {
 
                     _db.modify(root, [&](comment_object &c) {
                         c.children_abs_rshares += abs_rshares;
+
                         if (!_db.has_hardfork(STEEMIT_HARDFORK_0_17__91)) {
                             if (_db.has_hardfork(STEEMIT_HARDFORK_0_12__177) &&
                                 c.last_payout > fc::time_point_sec::min()) {
                                 c.cashout_time = c.last_payout +
-                                                 STEEMIT_SECOND_CASHOUT_WINDOW;
+                                                 STEEMIT_SECOND_CASHOUT_WINDOW_SECONDS;
                             } else {
                                 c.cashout_time = fc::time_point_sec(std::min(uint32_t(avg_cashout_sec.to_uint64()), c.max_cashout_time.sec_since_epoch()));
                             }

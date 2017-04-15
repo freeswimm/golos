@@ -188,6 +188,21 @@ namespace steemit {
                 auto end = fc::time_point::now();
                 ilog("Done reindexing, elapsed time: ${t} sec", ("t",
                         double((end - start).count()) / 1000000.0));
+
+                const auto &comment_idx = get_index<comment_index, by_root>();
+                for (auto itr = comment_idx.begin();
+                     itr != comment_idx.end(); ++itr) {
+                    auto cashout_time = calculate_discussion_payout_time(*itr);
+                    if (cashout_time == fc::time_point_sec::maximum()) {
+                        continue;
+                    }
+
+                    ilog("Updating comment payout: ${a} ${p}  --- Old Cashout Time: ${t1} --- New Cashout Time: ${t2}",
+                            ("a", itr->author)("p", itr->permlink)("t1", cashout_time)
+                                    ("t2", std::max(cashout_time, itr->created +
+                                                                  STEEMIT_CASHOUT_WINDOW_SECONDS)));
+                }
+
             }
             FC_CAPTURE_AND_RETHROW((data_dir)(shared_mem_dir))
 
@@ -2058,7 +2073,7 @@ namespace steemit {
                         if (has_hardfork(STEEMIT_HARDFORK_0_12__177) &&
                             c.last_payout == fc::time_point_sec::min()) {
                             c.cashout_time = head_block_time() +
-                                             STEEMIT_SECOND_CASHOUT_WINDOW;
+                                             STEEMIT_SECOND_CASHOUT_WINDOW_SECONDS;
                         } else {
                             c.cashout_time = fc::time_point_sec::maximum();
                         }
@@ -4064,17 +4079,17 @@ namespace steemit {
                 case STEEMIT_HARDFORK_0_1:
                     perform_vesting_share_split(10000);
 #ifdef STEEMIT_BUILD_TESTNET
-                    {
-                        custom_operation test_op;
-                        string op_msg = "Testnet: Hardfork applied";
-                        test_op.data = vector<char>(op_msg.begin(), op_msg.end());
-                        test_op.required_auths.insert(STEEMIT_INIT_MINER_NAME);
-                        operation op = test_op;   // we need the operation object to live to the end of this scope
-                        operation_notification note(op);
-                        notify_pre_apply_operation(note);
-                        notify_post_apply_operation(note);
-                    }
-                    break;
+                {
+                    custom_operation test_op;
+                    string op_msg = "Testnet: Hardfork applied";
+                    test_op.data = vector<char>(op_msg.begin(), op_msg.end());
+                    test_op.required_auths.insert(STEEMIT_INIT_MINER_NAME);
+                    operation op = test_op;   // we need the operation object to live to the end of this scope
+                    operation_notification note(op);
+                    notify_pre_apply_operation(note);
+                    notify_post_apply_operation(note);
+                }
+                break;
 #endif
                     break;
                 case STEEMIT_HARDFORK_0_2:
@@ -4126,7 +4141,7 @@ namespace steemit {
                                 fc::time_point_sec::maximum()) {
                                 modify(*itr, [&](comment_object &c) {
                                     c.cashout_time = head_block_time() +
-                                                     STEEMIT_CASHOUT_WINDOW_SECONDS;
+                                                     STEEMIT_CASHOUT_WINDOW_SECONDS_PRE_HF17;
                                     c.mode = first_payout;
                                 });
                             }
@@ -4134,7 +4149,7 @@ namespace steemit {
                             else if (itr->last_payout > fc::time_point_sec()) {
                                 modify(*itr, [&](comment_object &c) {
                                     c.cashout_time = c.last_payout +
-                                                     STEEMIT_SECOND_CASHOUT_WINDOW;
+                                                     STEEMIT_SECOND_CASHOUT_WINDOW_SECONDS;
                                     c.mode = second_payout;
                                 });
                             }
@@ -4208,13 +4223,13 @@ namespace steemit {
                     const auto &comment_idx = get_index<comment_index, by_root>();
                     for (auto itr = comment_idx.begin();
                          itr != comment_idx.end(); ++itr) {
-                        if (itr->cashout_time ==
-                            fc::time_point_sec::maximum()) {
+                        auto cashout_time = calculate_discussion_payout_time(*itr);
+                        if (cashout_time == fc::time_point_sec::maximum()) {
                             continue;
                         }
 
                         modify(*itr, [&](comment_object &c) {
-                            c.cashout_time = std::max(calculate_discussion_payout_time(c),
+                            c.cashout_time = std::max(cashout_time,
                                     c.created + STEEMIT_CASHOUT_WINDOW_SECONDS);
                         });
                     }

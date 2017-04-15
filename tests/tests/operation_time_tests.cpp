@@ -2705,7 +2705,7 @@ BOOST_AUTO_TEST_CASE( nested_comments )
                           db.head_block_time());
             BOOST_REQUIRE(
                     db.get_comment("alice", string("test")).cashout_time ==
-                    db.head_block_time() + STEEMIT_SECOND_CASHOUT_WINDOW);
+                    db.head_block_time() + STEEMIT_SECOND_CASHOUT_WINDOW_SECONDS);
 
             tx.operations.clear();
             tx.signatures.clear();

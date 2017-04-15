@@ -385,11 +385,9 @@ namespace steemit {
                     auto itr = idx.lower_bound(boost::make_tuple(auth.id));
                     while (itr != idx.end() && itr->author == auth.id) {
                         const auto &tobj = *itr;
-                        const auto &stats = get_stats(tobj.tag);
                         const auto *obj = _db.find<comment_object>(itr->comment);
                         ++itr;
                         if (!obj) {
-                            remove_stats(tobj, stats);
                             _db.remove(tobj);
                         }
                     }
