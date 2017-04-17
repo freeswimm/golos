@@ -4,7 +4,7 @@
 
 #include <fc/uint128.hpp>
 
-namespace steemit { namespace chain { namespace util {
+namespace steemit { namespace chain { namespace utility {
 
 inline u256 to256( const fc::uint128& t )
 {

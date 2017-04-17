@@ -334,6 +334,7 @@
 #define STEEMIT_APR_PERCENT_MULTIPLY_PER_BLOCK          ( (uint64_t( 0x5ccc ) << 0x20) \
                                                         | (uint64_t( 0xe802 ) << 0x10) \
                                                         | (uint64_t( 0xde5f )        ) \
+                                                        )
 
 // chosen to be the maximal value such that STEEMIT_APR_PERCENT_MULTIPLY_PER_BLOCK * 2**64 * 100000 < 2**128
 #define STEEMIT_APR_PERCENT_SHIFT_PER_BLOCK             87

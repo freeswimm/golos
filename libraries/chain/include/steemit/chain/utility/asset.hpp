@@ -2,7 +2,7 @@
 
 #include <steemit/protocol/asset.hpp>
 
-namespace steemit { namespace chain { namespace util {
+namespace steemit { namespace chain { namespace utility {
 
 using steemit::protocol::asset;
 using steemit::protocol::price;

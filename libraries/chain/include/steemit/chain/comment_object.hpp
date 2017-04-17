@@ -326,7 +326,7 @@ namespace steemit {
     }
 } // steemit::chain
 
-FC_REFLECT_ENUM(steemit::chain::comment_mode, (first_payout)(second_payout)(archived))
+FC_REFLECT_ENUM(steemit::chain::comment_mode, (first_payout)(second_payout)(extended_payout)(archived))
 
 FC_REFLECT(steemit::chain::comment_object,
         (id)(author)(permlink)

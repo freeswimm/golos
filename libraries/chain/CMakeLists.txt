@@ -28,7 +28,7 @@ if(BUILD_SHARED_LIBRARIES)
             #            transaction_object.cpp
             block_log.cpp
 
-            util/reward.cpp
+            utility/reward.cpp
 
             include/steemit/chain/account_object.hpp
             include/steemit/chain/block_log.hpp
@@ -58,9 +58,9 @@ if(BUILD_SHARED_LIBRARIES)
             include/steemit/chain/transaction_object.hpp
             include/steemit/chain/witness_objects.hpp
 
-            include/steemit/chain/util/asset.hpp
-            include/steemit/chain/util/reward.hpp
-            include/steemit/chain/util/uint256.hpp
+            include/steemit/chain/utility/asset.hpp
+            include/steemit/chain/utility/reward.hpp
+            include/steemit/chain/utility/uint256.hpp
 
             ${hardfork_hpp_file}
             "${CMAKE_CURRENT_BINARY_DIR}/include/steemit/chain/hardfork.hpp"
@@ -79,7 +79,7 @@ else()
             #            transaction_object.cpp
             block_log.cpp
 
-            util/reward.cpp
+            utility/reward.cpp
 
             include/steemit/chain/account_object.hpp
             include/steemit/chain/block_log.hpp
@@ -109,9 +109,9 @@ else()
             include/steemit/chain/transaction_object.hpp
             include/steemit/chain/witness_objects.hpp
 
-            include/steemit/chain/util/asset.hpp
-            include/steemit/chain/util/reward.hpp
-            include/steemit/chain/util/uint256.hpp
+            include/steemit/chain/utility/asset.hpp
+            include/steemit/chain/utility/reward.hpp
+            include/steemit/chain/utility/uint256.hpp
 
             ${hardfork_hpp_file}
             "${CMAKE_CURRENT_BINARY_DIR}/include/steemit/chain/hardfork.hpp"

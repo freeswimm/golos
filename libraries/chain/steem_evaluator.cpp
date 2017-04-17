@@ -4,7 +4,7 @@
 #include <steemit/chain/steem_objects.hpp>
 #include <steemit/chain/block_summary_object.hpp>
 
-#include <steemit/chain/util/reward.hpp>
+#include <steemit/chain/utility/reward.hpp>
 
 #ifndef IS_LOW_MEM
 
@@ -355,26 +355,34 @@ namespace steemit {
                 });
             }
 
-            if (o.amount) {
-                FC_ASSERT(_db.get_balance(from_account, o.amount.symbol) >=
-                          o.amount, "Account does not have sufficient funds for transfer.");
-                _db.adjust_balance(from_account, -o.amount);
-                _db.adjust_balance(to_account, o.amount);
-            } else if (o.extension_time) {
-
-            }
-
             const comment_object &comment = _db.get_comment(o.author, o.permlink);
 
-            _db.modify(comment, [&](comment_object &c) {
-                // TODO: Implement cashout time extension
+            if (o.amount) {
+                FC_ASSERT(_db.get_balance(from_account, o.amount->symbol) >=
+                          *o.amount, "Account does not have sufficient funds for transfer.");
+                _db.adjust_balance(from_account, -*o.amount);
+                _db.adjust_balance(to_account, *o.amount);
 
-                if (c.cashout_time == fc::time_point_sec::maximum()) {
+                _db.modify(comment, [&](comment_object &c) {
+                    // TODO: Implement cashout time extension
 
-                } else {
+                    if (c.cashout_time == fc::time_point_sec::maximum()) {
 
-                }
-            });
+                    } else {
+
+                    }
+                });
+            } else if (o.extension_time) {
+                _db.modify(comment, [&](comment_object &c) {
+                    // TODO: Implement cashout time extension
+
+                    if (c.cashout_time == fc::time_point_sec::maximum()) {
+
+                    } else {
+
+                    }
+                });
+            }
         }
 
         void comment_options_evaluator::do_apply(const comment_options_operation &o) {
@@ -571,7 +579,7 @@ namespace steemit {
                             com.cashout_time = fc::time_point_sec::maximum();
                         }
 
-                        if (_db.has_hardfork(STEEMIT_HARDFORK_0_17__769)) {
+                        if (_db.has_hardfork(STEEMIT_HARDFORK_0_17__91)) {
                             com.cashout_time = com.created +
                                                STEEMIT_CASHOUT_WINDOW_SECONDS;
                         }
@@ -1348,8 +1356,8 @@ namespace steemit {
                     fc::uint128_t new_rshares = std::max(comment.net_rshares.value, int64_t(0));
 
                     /// calculate rshares2 value
-                    new_rshares = util::calculate_vshares(new_rshares);
-                    old_rshares = util::calculate_vshares(old_rshares);
+                    new_rshares = utility::calculate_vshares(new_rshares);
+                    old_rshares = utility::calculate_vshares(old_rshares);
 
                     const auto &cat = _db.get_category(comment.category);
                     _db.modify(cat, [&](category_object &c) {
@@ -1408,13 +1416,13 @@ namespace steemit {
                                             (std::numeric_limits<uint64_t>::max() *
                                              fc::uint128_t(old_vote_rshares.value)) /
                                             (2 *
-                                             util::get_content_constant_s() +
+                                             utility::get_content_constant_s() +
                                              old_vote_rshares.value)).to_uint64();
                                     uint64_t new_weight = (
                                             (std::numeric_limits<uint64_t>::max() *
                                              fc::uint128_t(comment.vote_rshares.value)) /
                                             (2 *
-                                             util::get_content_constant_s() +
+                                             utility::get_content_constant_s() +
                                              comment.vote_rshares.value)).to_uint64();
                                     cv.weight = new_weight - old_weight;
                                 } else {
@@ -1423,7 +1431,7 @@ namespace steemit {
                                              fc::uint128_t(10000 *
                                                            old_vote_rshares.value)) /
                                             (2 *
-                                             util::get_content_constant_s() +
+                                             utility::get_content_constant_s() +
                                              (10000 *
                                               old_vote_rshares.value))).to_uint64();
                                     uint64_t new_weight = (
@@ -1431,7 +1439,7 @@ namespace steemit {
                                              fc::uint128_t(10000 *
                                                            comment.vote_rshares.value)) /
                                             (2 *
-                                             util::get_content_constant_s() +
+                                             utility::get_content_constant_s() +
                                              (10000 *
                                               comment.vote_rshares.value))).to_uint64();
                                     cv.weight = new_weight - old_weight;
@@ -1568,8 +1576,8 @@ namespace steemit {
                     fc::uint128_t new_rshares = std::max(comment.net_rshares.value, int64_t(0));
 
                     /// calculate rshares2 value
-                    new_rshares = util::calculate_vshares(new_rshares);
-                    old_rshares = util::calculate_vshares(old_rshares);
+                    new_rshares = utility::calculate_vshares(new_rshares);
+                    old_rshares = utility::calculate_vshares(old_rshares);
 
                     _db.modify(comment, [&](comment_object &c) {
                         c.total_vote_weight -= itr->weight;

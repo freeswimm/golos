@@ -4,7 +4,7 @@
 
 #include <steemit/protocol/get_config.hpp>
 
-#include <steemit/chain/util/reward.hpp>
+#include <steemit/chain/utility/reward.hpp>
 
 #include <fc/bloom_filter.hpp>
 #include <fc/smart_ref_impl.hpp>
@@ -1008,7 +1008,7 @@ namespace steemit {
             u256 total_r2 = to256(props.total_reward_shares2);
 
             if (props.total_reward_shares2 > 0) {
-                auto vshares = steemit::chain::util::calculate_vshares(
+                auto vshares = steemit::chain::utility::calculate_vshares(
                         d.net_rshares.value > 0 ? d.net_rshares.value : 0);
 
                 //int64_t abs_net_rshares = llabs(d.net_rshares.value);
