@@ -343,6 +343,40 @@ namespace steemit {
             _db.remove(comment);
         }
 
+        void comment_payout_extend_evaluator::do_apply(const comment_payout_extend_operation &o) {
+            database &_db = db();
+            const account_object &from_account = _db.get_account(o.author);
+            const account_object &to_account = _db.get_account(STEEMIT_NULL_ACCOUNT);
+
+            if (from_account.active_challenged) {
+                _db.modify(from_account, [&](account_object &a) {
+                    a.active_challenged = false;
+                    a.last_active_proved = _db.head_block_time();
+                });
+            }
+
+            if (o.amount) {
+                FC_ASSERT(_db.get_balance(from_account, o.amount.symbol) >=
+                          o.amount, "Account does not have sufficient funds for transfer.");
+                _db.adjust_balance(from_account, -o.amount);
+                _db.adjust_balance(to_account, o.amount);
+            } else if (o.extension_time) {
+
+            }
+
+            const comment_object &comment = _db.get_comment(o.author, o.permlink);
+
+            _db.modify(comment, [&](comment_object &c) {
+                // TODO: Implement cashout time extension
+
+                if (c.cashout_time == fc::time_point_sec::maximum()) {
+
+                } else {
+
+                }
+            });
+        }
+
         void comment_options_evaluator::do_apply(const comment_options_operation &o) {
             database &_db = db();
             if (_db.has_hardfork(STEEMIT_HARDFORK_0_10)) {
