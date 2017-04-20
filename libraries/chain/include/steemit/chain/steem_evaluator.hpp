@@ -7,8 +7,6 @@
 namespace steemit {
     namespace chain {
 
-        using namespace steemit::protocol;
-
         DEFINE_EVALUATOR(account_create)
 
         DEFINE_EVALUATOR(account_update)
