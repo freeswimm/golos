@@ -4,7 +4,7 @@
 
 #include <steemit/protocol/get_config.hpp>
 
-#include <steemit/chain/utility/reward.hpp>
+#include <steemit/chain/evaluators/reward.hpp>
 
 #include <fc/bloom_filter.hpp>
 #include <fc/smart_ref_impl.hpp>

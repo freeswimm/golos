@@ -1,10 +1,9 @@
-#include <steemit/chain/utility/reward.hpp>
+#include <steemit/chain/evaluators/reward.hpp>
 #include <steemit/chain/utility/uint256.hpp>
 
 namespace steemit {
     namespace chain {
         namespace utility {
-
             uint64_t get_rshare_reward(const comment_reward_context &ctx) {
                 try {
                     FC_ASSERT(ctx.rshares > 0);
@@ -31,7 +30,7 @@ namespace steemit {
                     payout = std::min(payout, uint64_t(max_steem.amount.value));
 
                     return payout;
-                } FC_CAPTURE_AND_RETHROW((ctx))
+                } FC_CAPTURE_AND_RETHROW((ctx));
             }
 
             uint128_t calculate_vshares(const uint128_t &rshares) {

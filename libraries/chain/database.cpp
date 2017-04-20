@@ -21,7 +21,8 @@
 #include <steemit/chain/operation_notification.hpp>
 
 #include <steemit/chain/utility/asset.hpp>
-#include <steemit/chain/utility/reward.hpp>
+#include <steemit/chain/evaluators/reward.hpp>
+#include <steemit/chain/evaluators/payout_extension.hpp>
 #include <steemit/chain/utility/uint256.hpp>
 
 #include <fc/smart_ref_impl.hpp>
@@ -2552,7 +2553,7 @@ namespace steemit {
             _my->_evaluator_registry.register_evaluator<vote_evaluator>();
             _my->_evaluator_registry.register_evaluator<comment_evaluator>();
             _my->_evaluator_registry.register_evaluator<comment_options_evaluator>();
-            _my->_evaluator_registry.register_evaluator<comment_payout_extend_evaluator>();
+            _my->_evaluator_registry.register_evaluator<comment_payout_extension_evaluator<evaluators::comment_payout_extension>>();
             _my->_evaluator_registry.register_evaluator<delete_comment_evaluator>();
             _my->_evaluator_registry.register_evaluator<transfer_evaluator>();
             _my->_evaluator_registry.register_evaluator<transfer_to_vesting_evaluator>();

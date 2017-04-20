@@ -20,7 +20,8 @@ namespace steemit {
 
             using fc::uint128_t;
 
-            struct comment_reward_context {
+            class comment_reward_context {
+            public:
                 share_type rshares;
                 uint16_t reward_weight = 0;
                 asset max_sbd;
@@ -41,7 +42,6 @@ namespace steemit {
                 return to_sbd(p, asset(steem_payout, STEEM_SYMBOL)) <
                        STEEMIT_MIN_PAYOUT_SBD;
             }
-
         }
     }
 }

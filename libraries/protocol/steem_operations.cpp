@@ -1,4 +1,5 @@
 #include <steemit/protocol/steem_operations.hpp>
+
 #include <fc/io/json.hpp>
 
 namespace steemit {
@@ -69,7 +70,7 @@ namespace steemit {
             }
         }
 
-        void comment_payout_extend_operation::validate() const {
+        void comment_payout_extension_operation::validate() const {
             validate_account_name(author);
             validate_permlink(permlink);
 
@@ -85,8 +86,9 @@ namespace steemit {
 
             if (extension_time) {
                 FC_ASSERT(*extension_time <=
-                        fc::time_point_sec(STEEMIT_CASHOUT_WINDOW_SECONDS), "Payout window extension cannot be larger than a week");
-                FC_ASSERT(*extension_time > fc::time_point_sec(0), "Payout window extension cannot be extended for 0 seconds");
+                          fc::time_point_sec(STEEMIT_CASHOUT_WINDOW_SECONDS), "Payout window extension cannot be larger than a week");
+                FC_ASSERT(*extension_time >
+                          fc::time_point_sec(0), "Payout window extension cannot be extended for 0 seconds");
             }
         }
 

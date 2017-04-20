@@ -34,7 +34,7 @@ namespace steemit {
         struct operation_notification;
 
         namespace utility {
-            struct comment_reward_context;
+            class comment_reward_context;
         }
 
         /**

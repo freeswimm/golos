@@ -7,31 +7,151 @@
 namespace steemit {
     namespace chain {
 
-        using namespace steemit::protocol;
+        class account_create_evaluator
+                : public steemit::chain::evaluator_impl<account_create_evaluator> {
+        public:
+            typedef protocol::account_create_operation operation_type;
 
-        STEEMIT_DEFINE_EVALUATOR(account_create)
+            account_create_evaluator(database &db)
+                    : steemit::chain::evaluator_impl<account_create_evaluator>(db) {
+            }
 
-        STEEMIT_DEFINE_EVALUATOR(account_update)
+            void do_apply(const protocol::account_create_operation &o);
+        };
 
-        STEEMIT_DEFINE_EVALUATOR(transfer)
+        class account_update_evaluator
+                : public steemit::chain::evaluator_impl<account_update_evaluator> {
+        public:
+            typedef protocol::account_update_operation operation_type;
 
-        STEEMIT_DEFINE_EVALUATOR(transfer_to_vesting)
+            account_update_evaluator(database &db)
+                    : steemit::chain::evaluator_impl<account_update_evaluator>(db) {
+            }
 
-        STEEMIT_DEFINE_EVALUATOR(witness_update)
+            void do_apply(const protocol::account_update_operation &o);
+        };
 
-        STEEMIT_DEFINE_EVALUATOR(account_witness_vote)
+        class transfer_evaluator
+                : public steemit::chain::evaluator_impl<transfer_evaluator> {
+        public:
+            typedef protocol::transfer_operation operation_type;
 
-        STEEMIT_DEFINE_EVALUATOR(account_witness_proxy)
+            transfer_evaluator(database &db)
+                    : steemit::chain::evaluator_impl<transfer_evaluator>(db) {
+            }
 
-        STEEMIT_DEFINE_EVALUATOR(withdraw_vesting)
+            void do_apply(const protocol::transfer_operation &o);
+        };
 
-        STEEMIT_DEFINE_EVALUATOR(set_withdraw_vesting_route)
+        class transfer_to_vesting_evaluator
+                : public steemit::chain::evaluator_impl<transfer_to_vesting_evaluator> {
+        public:
+            typedef protocol::transfer_to_vesting_operation operation_type;
 
-        STEEMIT_DEFINE_EVALUATOR(comment)
+            transfer_to_vesting_evaluator(database &db)
+                    : steemit::chain::evaluator_impl<transfer_to_vesting_evaluator>(db) {
+            }
 
-        STEEMIT_DEFINE_EVALUATOR(comment_options)
+            void do_apply(const protocol::transfer_to_vesting_operation &o);
+        };
 
-        STEEMIT_DEFINE_EVALUATOR(comment_payout_extend)
+        class witness_update_evaluator
+                : public steemit::chain::evaluator_impl<witness_update_evaluator> {
+        public:
+            typedef protocol::witness_update_operation operation_type;
+
+            witness_update_evaluator(database &db)
+                    : steemit::chain::evaluator_impl<witness_update_evaluator>(db) {
+            }
+
+            void do_apply(const protocol::witness_update_operation &o);
+        };
+
+        class account_witness_vote_evaluator
+                : public steemit::chain::evaluator_impl<account_witness_vote_evaluator> {
+        public:
+            typedef protocol::account_witness_vote_operation operation_type;
+
+            account_witness_vote_evaluator(database &db)
+                    : steemit::chain::evaluator_impl<account_witness_vote_evaluator>(db) {
+            }
+
+            void do_apply(const protocol::account_witness_vote_operation &o);
+        };
+
+        class account_witness_proxy_evaluator
+                : public steemit::chain::evaluator_impl<account_witness_proxy_evaluator> {
+        public:
+            typedef protocol::account_witness_proxy_operation operation_type;
+
+            account_witness_proxy_evaluator(database &db)
+                    : steemit::chain::evaluator_impl<account_witness_proxy_evaluator>(db) {
+            }
+
+            void do_apply(const protocol::account_witness_proxy_operation &o);
+        };
+
+        class withdraw_vesting_evaluator
+                : public steemit::chain::evaluator_impl<withdraw_vesting_evaluator> {
+        public:
+            typedef protocol::withdraw_vesting_operation operation_type;
+
+            withdraw_vesting_evaluator(database &db)
+                    : steemit::chain::evaluator_impl<withdraw_vesting_evaluator>(db) {
+            }
+
+            void do_apply(const protocol::withdraw_vesting_operation &o);
+        };
+
+        class set_withdraw_vesting_route_evaluator
+                : public steemit::chain::evaluator_impl<set_withdraw_vesting_route_evaluator> {
+        public:
+            typedef protocol::set_withdraw_vesting_route_operation operation_type;
+
+            set_withdraw_vesting_route_evaluator(database &db)
+                    : steemit::chain::evaluator_impl<set_withdraw_vesting_route_evaluator>(db) {
+            }
+
+            void do_apply(const protocol::set_withdraw_vesting_route_operation &o);
+        };
+
+        class comment_evaluator
+                : public steemit::chain::evaluator_impl<comment_evaluator> {
+        public:
+            typedef protocol::comment_operation operation_type;
+
+            comment_evaluator(database &db)
+                    : steemit::chain::evaluator_impl<comment_evaluator>(db) {
+            }
+
+            void do_apply(const protocol::comment_operation &o);
+        };
+
+        class comment_options_evaluator
+                : public steemit::chain::evaluator_impl<comment_options_evaluator> {
+        public:
+            typedef protocol::comment_options_operation operation_type;
+
+            comment_options_evaluator(database &db)
+                    : steemit::chain::evaluator_impl<comment_options_evaluator>(db) {
+            }
+
+            void do_apply(const protocol::comment_options_operation &o);
+        };
+
+        template<typename PriceEvaluator>
+        class comment_payout_extension_evaluator
+                : public steemit::chain::evaluator_impl<comment_payout_extension_evaluator<PriceEvaluator>> {
+        public:
+            typedef protocol::comment_payout_extension_operation operation_type;
+            typedef PriceEvaluator price_evaluator_type;
+
+            comment_payout_extension_evaluator(database &db)
+                    : steemit::chain::evaluator_impl<comment_payout_extension_evaluator>(db) {
+            }
+
+            void do_apply(const protocol::comment_payout_extension_operation &o);
+        };
 
         STEEMIT_DEFINE_EVALUATOR(delete_comment)
 
@@ -88,6 +208,5 @@ namespace steemit {
         STEEMIT_DEFINE_EVALUATOR(reset_account)
 
         STEEMIT_DEFINE_EVALUATOR(set_reset_account)
-
     }
 } // steemit::chain

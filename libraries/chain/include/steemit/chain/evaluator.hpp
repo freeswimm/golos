@@ -51,11 +51,11 @@ namespace steemit {
 class X ## _evaluator : public steemit::chain::evaluator_impl< X ## _evaluator > \
 {                                                                           \
    public:                                                                  \
-      typedef X ## _operation operation_type;                               \
+      typedef protocol:: X ## _operation operation_type;                               \
                                                                             \
       X ## _evaluator( database& db )                                       \
          : steemit::chain::evaluator_impl< X ## _evaluator >( db )          \
       {}                                                                    \
                                                                             \
-      void do_apply( const X ## _operation& o );                            \
+      void do_apply( const protocol:: X ## _operation& o );                            \
 };

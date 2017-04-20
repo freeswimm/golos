@@ -52,11 +52,14 @@ namespace steemit {
             }
         };
 
-        class comment_operation : public base_operation {
+        class comment_base_operation : public base_operation {
         public:
             account_name_type author;
             string permlink;
+        };
 
+        class comment_operation : public comment_base_operation {
+        public:
             account_name_type parent_author;
             string parent_permlink;
 
@@ -71,11 +74,9 @@ namespace steemit {
             }
         };
 
-        class comment_payout_extend_operation : public base_operation {
+        class comment_payout_extension_operation
+                : public comment_base_operation {
         public:
-            account_name_type author;
-            string permlink;
-
             optional<fc::time_point_sec> extension_time;
             optional<asset> amount;
 
@@ -102,11 +103,8 @@ namespace steemit {
          *  The percent_steem_dollars may be decreased, but never increased
          *
          */
-        class comment_options_operation : public base_operation {
+        class comment_options_operation : public comment_base_operation {
         public:
-            account_name_type author;
-            string permlink;
-
             asset max_accepted_payout = asset(1000000000, SBD_SYMBOL);       /// SBD value of the maximum payout this post will receive
             uint16_t percent_steem_dollars = STEEMIT_100_PERCENT; /// the percent of Golos to key, unkept amounts will be received as Golos Power
             bool allow_votes = true;      /// allows a post to receive votes;
@@ -168,11 +166,8 @@ namespace steemit {
         };
 
 
-        class vote_operation : public base_operation {
+        class vote_operation : public comment_base_operation {
         public:
-            account_name_type author;
-            string permlink;
-
             account_name_type voter;
             int16_t weight = 0;
 
@@ -1038,13 +1033,23 @@ namespace steemit {
 } // steemit::protocol
 
 
-FC_REFLECT(steemit::protocol::transfer_to_savings_operation, (from)(to)(amount)(memo));
-FC_REFLECT(steemit::protocol::transfer_from_savings_operation, (from)(request_id)(to)(amount)(memo));
+FC_REFLECT(steemit::protocol::transfer_to_savings_operation,
+        (from)
+                (to)
+                (amount)
+                (memo));
+
+FC_REFLECT(steemit::protocol::transfer_from_savings_operation,
+        (from)
+                (request_id)
+                (to)
+                (amount)
+                (memo));
+
 FC_REFLECT(steemit::protocol::cancel_transfer_from_savings_operation, (from)(request_id));
 
 FC_REFLECT(steemit::protocol::reset_account_operation, (reset_account)(account_to_reset)(new_owner_authority));
 FC_REFLECT(steemit::protocol::set_reset_account_operation, (account)(current_reset_account)(reset_account));
-
 
 FC_REFLECT(steemit::protocol::report_over_production_operation, (reporter)(first_block)(second_block));
 FC_REFLECT(steemit::protocol::convert_operation, (owner)(requestid)(amount));
@@ -1084,9 +1089,10 @@ FC_REFLECT(steemit::protocol::set_withdraw_vesting_route_operation, (from_accoun
 FC_REFLECT(steemit::protocol::witness_update_operation, (owner)(url)(block_signing_key)(props)(fee));
 FC_REFLECT(steemit::protocol::account_witness_vote_operation, (account)(witness)(approve));
 FC_REFLECT(steemit::protocol::account_witness_proxy_operation, (account)(proxy));
-FC_REFLECT(steemit::protocol::comment_operation, (parent_author)(parent_permlink)(author)(permlink)(title)(body)(json_metadata));
-FC_REFLECT(steemit::protocol::comment_payout_extend_operation, (author)(permlink)(amount)(extension_time));
-FC_REFLECT(steemit::protocol::vote_operation, (voter)(author)(permlink)(weight));
+FC_REFLECT(steemit::protocol::comment_base_operation, (author)(permlink));
+FC_REFLECT_DERIVED(steemit::protocol::comment_operation, (steemit::protocol::comment_base_operation), (parent_author)(parent_permlink)(title)(body)(json_metadata));
+FC_REFLECT_DERIVED(steemit::protocol::comment_payout_extension_operation, (steemit::protocol::comment_base_operation), (amount)(extension_time));
+FC_REFLECT_DERIVED(steemit::protocol::vote_operation, (steemit::protocol::comment_base_operation), (voter)(weight));
 FC_REFLECT(steemit::protocol::custom_operation, (required_auths)(id)(data));
 FC_REFLECT(steemit::protocol::custom_json_operation, (required_auths)(required_posting_auths)(id)(json));
 FC_REFLECT(steemit::protocol::custom_binary_operation, (required_owner_auths)(required_active_auths)(required_posting_auths)(required_auths)(id)(data));
@@ -1095,7 +1101,7 @@ FC_REFLECT(steemit::protocol::limit_order_create2_operation, (owner)(orderid)(am
 FC_REFLECT(steemit::protocol::limit_order_cancel_operation, (owner)(orderid));
 
 FC_REFLECT(steemit::protocol::delete_comment_operation, (author)(permlink));
-FC_REFLECT(steemit::protocol::comment_options_operation, (author)(permlink)(max_accepted_payout)(percent_steem_dollars)(allow_votes)(allow_curation_rewards)(extensions));
+FC_REFLECT_DERIVED(steemit::protocol::comment_options_operation, (steemit::protocol::comment_base_operation), (max_accepted_payout)(percent_steem_dollars)(allow_votes)(allow_curation_rewards)(extensions));
 
 FC_REFLECT(steemit::protocol::escrow_transfer_operation, (from)(to)(sbd_amount)(steem_amount)(escrow_id)(agent)(fee)(json_meta)(ratification_deadline)(escrow_expiration));
 FC_REFLECT(steemit::protocol::escrow_approve_operation, (from)(to)(agent)(who)(escrow_id)(approve));
