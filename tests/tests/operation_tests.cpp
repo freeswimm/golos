@@ -8,7 +8,7 @@
 #include <steemit/chain/hardfork.hpp>
 #include <steemit/chain/steem_objects.hpp>
 
-#include <steemit/chain/utility/reward.hpp>
+#include <steemit/chain/evaluators/reward.hpp>
 
 #include <fc/crypto/digest.hpp>
 
