@@ -9,7 +9,8 @@
 #include <steemit/chain/hardfork.hpp>
 #include <steemit/chain/history_object.hpp>
 #include <steemit/chain/steem_objects.hpp>
-#include <steemit/chain/utility/reward.hpp>
+
+#include <steemit/chain/evaluators/reward.hpp>
 
 #include <steemit/plugins/debug_node/debug_node_plugin.hpp>
 
