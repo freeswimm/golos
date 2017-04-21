@@ -176,6 +176,7 @@ namespace steemit {
 
                     this->_db.modify(comment, [&](comment_object &c) {
                         c.cashout_time = price_evaluator_type().time_by_cost(*o.amount, c);
+                        c.mode = comment_mode::extended_payout;
                     });
                 } else if (o.extension_time) {
                     typename price_evaluator_type::asset_type amount = price_evaluator_type().cost_by_time(*o.extension_time, comment);
@@ -184,6 +185,7 @@ namespace steemit {
 
                     this->_db.modify(comment, [&](comment_object &c) {
                         c.cashout_time = *o.extension_time;
+                        c.mode = comment_mode::extended_payout;
                     });
                 }
             }
