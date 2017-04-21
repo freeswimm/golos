@@ -3,6 +3,10 @@
 #include <steemit/protocol/steem_operations.hpp>
 
 #include <steemit/chain/evaluator.hpp>
+#include <steemit/chain/account_object.hpp>
+#include <steemit/chain/comment_object.hpp>
+
+#include <steemit/time/time.hpp>
 
 namespace steemit {
     namespace chain {
@@ -147,10 +151,42 @@ namespace steemit {
             typedef PriceEvaluator price_evaluator_type;
 
             comment_payout_extension_evaluator(database &db)
-                    : steemit::chain::evaluator_impl<comment_payout_extension_evaluator>(db) {
+                    : steemit::chain::evaluator_impl<comment_payout_extension_evaluator<PriceEvaluator>>(db) {
             }
 
-            void do_apply(const protocol::comment_payout_extension_operation &o);
+            void do_apply(const protocol::comment_payout_extension_operation &o) {
+                const account_object &from_account = this->_db.get_account(o.author);
+                const account_object &to_account = this->_db.get_account(STEEMIT_NULL_ACCOUNT);
+
+                if (from_account.active_challenged) {
+                    this->_db.modify(from_account, [&](account_object &a) {
+                        a.active_challenged = false;
+                        a.last_active_proved = this->_db.head_block_time();
+                    });
+                }
+
+                const comment_object &comment = this->_db.get_comment(o.author, o.permlink);
+
+                if (o.amount) {
+                    FC_ASSERT(
+                            this->_db.get_balance(from_account, o.amount->symbol) >=
+                            *o.amount, "Account does not have sufficient funds for transfer.");
+                    this->_db.adjust_balance(from_account, -*o.amount);
+                    this->_db.adjust_balance(to_account, *o.amount);
+
+                    this->_db.modify(comment, [&](comment_object &c) {
+                        c.cashout_time = price_evaluator_type().time_by_cost(*o.amount, c);
+                    });
+                } else if (o.extension_time) {
+                    typename price_evaluator_type::asset_type amount = price_evaluator_type().cost_by_time(*o.extension_time, comment);
+                    this->_db.adjust_balance(from_account, -amount);
+                    this->_db.adjust_balance(to_account, amount);
+
+                    this->_db.modify(comment, [&](comment_object &c) {
+                        c.cashout_time = *o.extension_time;
+                    });
+                }
+            }
         };
 
         class delete_comment_evaluator

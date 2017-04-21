@@ -338,36 +338,6 @@ namespace steemit {
             _db.remove(comment);
         }
 
-        template<typename PriceEvaluator>
-        void comment_payout_extension_evaluator<PriceEvaluator>::do_apply(const comment_payout_extension_operation &o) {
-            const account_object &from_account = this->_db.get_account(o.author);
-            const account_object &to_account = this->_db.get_account(STEEMIT_NULL_ACCOUNT);
-
-            if (from_account.active_challenged) {
-                this->_db.modify(from_account, [&](account_object &a) {
-                    a.active_challenged = false;
-                    a.last_active_proved = this->_db.head_block_time();
-                });
-            }
-
-            const comment_object &comment = this->_db.get_comment(o.author, o.permlink);
-
-            if (o.amount) {
-                FC_ASSERT(this->_db.get_balance(from_account, o.amount->symbol) >=
-                          *o.amount, "Account does not have sufficient funds for transfer.");
-                this->_db.adjust_balance(from_account, -*o.amount);
-                this->_db.adjust_balance(to_account, *o.amount);
-
-                this->_db.modify(comment, [&](comment_object &c) {
-                    c.cashout_time = price_evaluator_type().template time_by_cost(*o.amount, c);
-                });
-            } else if (o.extension_time) {
-                this->_db.modify(comment, [&](comment_object &c) {
-                    c.cashout_time = price_evaluator_type().template cost_by_time(*o.extension_time, c);
-                });
-            }
-        }
-
         void comment_options_evaluator::do_apply(const comment_options_operation &o) {
 
             if (_db.has_hardfork(STEEMIT_HARDFORK_0_10)) {

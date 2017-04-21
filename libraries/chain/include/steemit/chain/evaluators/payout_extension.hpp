@@ -11,6 +11,9 @@ namespace steemit {
             template<typename TimeTypename, typename AssetTypename>
             class base_comment_payout_extension {
             public:
+                typedef TimeTypename time_type;
+                typedef AssetTypename asset_type;
+
                 virtual TimeTypename time_by_cost(const asset &input_asset, const chain::comment_object &input_comment) const = 0;
 
                 virtual AssetTypename cost_by_time(const time_point_sec &input_time, const chain::comment_object &input_comment) const = 0;
