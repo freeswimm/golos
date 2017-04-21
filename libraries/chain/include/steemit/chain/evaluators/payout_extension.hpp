@@ -29,8 +29,6 @@ namespace steemit {
 
                 const static share_type cost_per_day;
             };
-
-            const share_type comment_payout_extension::cost_per_day = 10;
         }
     }
 }
