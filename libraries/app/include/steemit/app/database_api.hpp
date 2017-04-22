@@ -372,6 +372,13 @@ namespace steemit {
             std::vector<pair<std::string, uint32_t>> get_tags_used_by_author(const std::string &author) const;
 
             /**
+             * Used to retrieve the list of discussions sorted by net rshares amount
+             * @param query @ref discussion_query
+             * @return vector of discussions sorted by net rshares amount
+             **/
+            std::vector<discussion> get_discussions_by_payout(const discussion_query &query) const;
+
+            /**
              * Used to retrieve the list of first payout discussions sorted by rshares^2 amount
              * @param query @ref discussion_query
              * @return vector of first payout mode discussions sorted by rshares^2 amount
@@ -405,13 +412,6 @@ namespace steemit {
              * @return vector of discussions sorted by last cashout time
              **/
             std::vector<discussion> get_discussions_by_cashout(const discussion_query &query) const;
-
-            /**
-             * Used to retrieve the list of discussions sorted by net rshares amount
-             * @param query @ref discussion_query
-             * @return vector of discussions sorted by net rshares amount
-             **/
-            std::vector<discussion> get_discussions_by_payout(const discussion_query &query) const;
 
             /**
              * Used to retrieve the list of discussions sorted by direct votes amount
@@ -515,7 +515,8 @@ namespace steemit {
                     const Index &tidx, StartItr tidx_itr,
                     const std::function<bool(const comment_api_obj &)> &filter = &database_api::filter_default,
                     const std::function<bool(const comment_api_obj &)> &exit = &database_api::exit_default,
-                    const std::function<bool(const tags::tag_object &)> &tag_exit = &database_api::tag_exit_default) const;
+                    const std::function<bool(const tags::tag_object &)> &tag_exit = &database_api::tag_exit_default,
+                    bool ignore_parent = false) const;
 
             comment_id_type get_parent(const discussion_query &q) const;
 
