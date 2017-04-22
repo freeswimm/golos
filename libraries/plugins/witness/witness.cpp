@@ -461,7 +461,7 @@ void witness_plugin::start_mining(
                 op.props = _miner_prop_vote;
 
                 while (true) {
-                    if (steemit::time::nonblocking_now() > stop) {
+                    if (steemit::time::now() > stop) {
                         // ilog( "stop mining due to time out, nonce: ${n}", ("n",op.nonce) );
                         return;
                     }
@@ -511,7 +511,7 @@ void witness_plugin::start_mining(
                 op.props = _miner_prop_vote;
                 while (true) {
                     //  if( ((op.nonce/num_threads) % 1000) == 0 ) idump((op.nonce));
-                    if (steemit::time::nonblocking_now() > stop) {
+                    if (steemit::time::now() > stop) {
                         // ilog( "stop mining due to time out, nonce: ${n}", ("n",op.nonce) );
                         return;
                     }
