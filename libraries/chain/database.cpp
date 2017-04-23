@@ -1066,19 +1066,19 @@ namespace steemit {
             try {
                 const auto &cprops = get_dynamic_global_properties();
 
-                /**
-       *  The ratio of total_vesting_shares / total_vesting_fund_steem should not
-       *  change as the result of the user adding funds
-       *
-       *  V / C  = (V+Vn) / (C+Cn)
-       *
-       *  Simplifies to Vn = (V * Cn ) / C
-       *
-       *  If Cn equals o.amount, then we must solve for Vn to know how many new vesting shares
-       *  the user should receive.
-       *
-       *  128 bit math is requred due to multiplying of 64 bit numbers. This is done in asset and price.
-       */
+/**
+ *  The ratio of total_vesting_shares / total_vesting_fund_steem should not
+ *  change as the result of the user adding funds
+ *
+ *  V / C  = (V+Vn) / (C+Cn)
+ *
+ *  Simplifies to Vn = (V * Cn ) / C
+ *
+ *  If Cn equals o.amount, then we must solve for Vn to know how many new vesting shares
+ *  the user should receive.
+ *
+ *  128 bit math is required due to multiplying of 64 bit numbers. This is done in asset and price.
+ */
                 asset new_vesting = steem * cprops.get_vesting_share_price();
 
                 modify(to_account, [&](account_object &to) {

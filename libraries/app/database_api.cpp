@@ -1077,6 +1077,14 @@ namespace steemit {
             });
         }
 
+        asset database_api::get_payout_window_extension_cost_by_time(std::string author, std::string permlink, fc::time_point_sec time) const {
+            return asset();
+        }
+
+        fc::time_point_sec database_api::get_payout_window_extension_time_by_cost(std::string author, std::string permlink, asset cost) const {
+            return time_point_sec();
+        }
+
 /**
  *  This method can be used to fetch replies to an account.
  *
