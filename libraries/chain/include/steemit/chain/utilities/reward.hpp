@@ -32,7 +32,7 @@ namespace steemit {
 
             uint64_t get_rshare_reward(const comment_reward_context &ctx);
 
-            uint64_t get_rshare_reward(const comment_reward_context &ctx, const reward_fund_object &rf);
+            uint64_t get_rshare_reward(const comment_reward_context &ctx, const reward_fund_object &rf_object);
 
             inline uint128_t get_content_constant_s() {
                 return uint128_t(uint64_t(2000000000000ll)); // looking good for posters
@@ -46,7 +46,6 @@ namespace steemit {
                 return to_sbd(p, asset(steem_payout, STEEM_SYMBOL)) <
                        STEEMIT_MIN_PAYOUT_SBD;
             }
-
         }
     }
 }
