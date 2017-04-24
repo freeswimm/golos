@@ -1,9 +1,9 @@
-#include <steemit/chain/util/reward.hpp>
-#include <steemit/chain/util/uint256.hpp>
+#include <steemit/chain/utilities/reward.hpp>
+#include <steemit/chain/utilities/uint256.hpp>
 
 namespace steemit {
     namespace chain {
-        namespace util {
+        namespace utilities {
 
             uint64_t get_rshare_reward(const comment_reward_context &ctx) {
                 try {

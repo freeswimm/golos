@@ -33,7 +33,7 @@ namespace steemit {
 
         struct operation_notification;
 
-        namespace util {
+        namespace utilities {
             struct comment_reward_context;
         }
 
@@ -388,7 +388,7 @@ namespace steemit {
 
             share_type pay_curators(const comment_object &c, share_type max_rewards);
 
-            void cashout_comment_helper(util::comment_reward_context &ctx, const comment_object &comment);
+            void cashout_comment_helper(utilities::comment_reward_context &ctx, const comment_object &comment);
 
             void process_comment_cashout();
 
