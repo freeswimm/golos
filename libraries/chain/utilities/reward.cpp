@@ -4,7 +4,6 @@
 namespace steemit {
     namespace chain {
         namespace utilities {
-
             uint64_t get_rshare_reward(const comment_reward_context &ctx) {
                 try {
                     FC_ASSERT(ctx.rshares > 0);
@@ -39,7 +38,6 @@ namespace steemit {
                 uint128_t rshares_plus_s = rshares + s;
                 return rshares_plus_s * rshares_plus_s - s * s;
             }
-
         }
     }
 }
