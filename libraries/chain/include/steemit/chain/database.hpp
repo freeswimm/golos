@@ -141,7 +141,6 @@ namespace steemit {
 
             chain_id_type get_chain_id() const;
 
-
             const witness_object &get_witness(const account_name_type &name) const;
 
             const witness_object *find_witness(const account_name_type &name) const;
