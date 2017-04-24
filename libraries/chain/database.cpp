@@ -4234,6 +4234,7 @@ namespace steemit {
                         modify(*itr, [&](comment_object &c) {
                             c.cashout_time = std::max(c.created +
                                                       STEEMIT_CASHOUT_WINDOW_SECONDS, c.cashout_time);
+                                                                        c.children_rshares2 = 0;
                         });
                     }
 
@@ -4241,6 +4242,7 @@ namespace steemit {
                         modify(*itr, [&](comment_object &c) {
                             c.cashout_time = std::max(calculate_discussion_payout_time(c),
                                     c.created + STEEMIT_CASHOUT_WINDOW_SECONDS);
+                                                      c.children_rshares2 = 0;
                         });
                     }
                 }
