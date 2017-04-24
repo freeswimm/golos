@@ -45,8 +45,8 @@ list(APPEND CURRENT_TARGET_HEADERS
         include/steemit/chain/evaluators/reward.hpp
         include/steemit/chain/evaluators/payout_extension.hpp
 
-        include/steemit/chain/utility/asset.hpp
-        include/steemit/chain/utility/uint256.hpp
+        include/steemit/chain/utilities/asset.hpp
+        include/steemit/chain/utilities/uint256.hpp
         )
 
 list(APPEND CURRENT_TARGET_SOURCES

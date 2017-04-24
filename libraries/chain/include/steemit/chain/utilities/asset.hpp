@@ -4,7 +4,7 @@
 
 namespace steemit {
     namespace chain {
-        namespace utility {
+        namespace utilities {
 
             using steemit::protocol::asset;
             using steemit::protocol::price;

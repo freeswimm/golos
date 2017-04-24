@@ -1,9 +1,9 @@
 #include <steemit/chain/evaluators/reward.hpp>
-#include <steemit/chain/utility/uint256.hpp>
+#include <steemit/chain/utilities/uint256.hpp>
 
 namespace steemit {
     namespace chain {
-        namespace utility {
+        namespace utilities {
             uint64_t get_rshare_reward(const comment_reward_context &ctx) {
                 try {
                     FC_ASSERT(ctx.rshares > 0);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <steemit/chain/utility/asset.hpp>
+#include <steemit/chain/utilities/asset.hpp>
 
 #include <steemit/protocol/asset.hpp>
 #include <steemit/protocol/config.hpp>
@@ -12,7 +12,7 @@
 
 namespace steemit {
     namespace chain {
-        namespace utility {
+        namespace utilities {
 
             using steemit::protocol::asset;
             using steemit::protocol::price;
@@ -46,7 +46,7 @@ namespace steemit {
     }
 }
 
-FC_REFLECT(steemit::chain::utility::comment_reward_context,
+FC_REFLECT(steemit::chain::utilities::comment_reward_context,
         (rshares)
                 (reward_weight)
                 (max_sbd)

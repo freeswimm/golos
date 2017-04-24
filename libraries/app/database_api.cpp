@@ -1009,7 +1009,7 @@ namespace steemit {
             u256 total_r2 = to256(props.total_reward_shares2);
 
             if (props.total_reward_shares2 > 0) {
-                auto vshares = steemit::chain::utility::calculate_vshares(
+                auto vshares = steemit::chain::utilities::calculate_vshares(
                         d.net_rshares.value > 0 ? d.net_rshares.value : 0);
 
                 //int64_t abs_net_rshares = llabs(d.net_rshares.value);
@@ -1070,7 +1070,7 @@ namespace steemit {
                     discussion push_discussion(*itr);
                     push_discussion.active_votes = get_active_votes(author, permlink);
 
-                    result.push_back(discussion(*itr));
+                    result.push_back(push_discussion(*itr));
                     set_pending_payout(result.back());
                     ++itr;
                 }

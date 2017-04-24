@@ -20,8 +20,8 @@
 #include <steemit/chain/shared_db_merkle.hpp>
 #include <steemit/chain/operation_notification.hpp>
 
-#include <steemit/chain/utility/asset.hpp>
-#include <steemit/chain/utility/uint256.hpp>
+#include <steemit/chain/utilities/asset.hpp>
+#include <steemit/chain/utilities/uint256.hpp>
 
 #include <steemit/chain/evaluators/reward.hpp>
 #include <steemit/chain/evaluators/payout_extension.hpp>
@@ -1948,20 +1948,20 @@ namespace steemit {
             } FC_CAPTURE_AND_RETHROW()
         }
 
-        void fill_comment_reward_context_global_state(utility::comment_reward_context &ctx, const database &db) {
+        void fill_comment_reward_context_global_state(utilities::comment_reward_context &ctx, const database &db) {
             const dynamic_global_property_object &dgpo = db.get_dynamic_global_properties();
             ctx.total_reward_shares2 = dgpo.total_reward_shares2;
             ctx.total_reward_fund_steem = dgpo.total_reward_fund_steem;
             ctx.current_steem_price = db.get_feed_history().current_median_history;
         }
 
-        void fill_comment_reward_context_local_state(utility::comment_reward_context &ctx, const comment_object &comment) {
+        void fill_comment_reward_context_local_state(utilities::comment_reward_context &ctx, const comment_object &comment) {
             ctx.rshares = comment.net_rshares;
             ctx.reward_weight = comment.reward_weight;
             ctx.max_sbd = comment.max_accepted_payout;
         }
 
-        void database::cashout_comment_helper(utility::comment_reward_context &ctx, const comment_object &comment) {
+        void database::cashout_comment_helper(utilities::comment_reward_context &ctx, const comment_object &comment) {
             try {
                 const auto &cat = get_category(comment.category);
 
@@ -1972,7 +1972,7 @@ namespace steemit {
                         fill_comment_reward_context_global_state(ctx, *this);
                     }
 
-                    const share_type reward = utility::get_rshare_reward(ctx);
+                    const share_type reward = utilities::get_rshare_reward(ctx);
                     uint128_t reward_tokens = uint128_t(reward.value);
 
                     asset total_payout;
@@ -2031,7 +2031,7 @@ namespace steemit {
                         });
                     }
 
-                    fc::uint128_t old_rshares2 = utility::calculate_vshares(comment.net_rshares.value);
+                    fc::uint128_t old_rshares2 = utilities::calculate_vshares(comment.net_rshares.value);
                     adjust_rshares2(comment, old_rshares2, 0);
                 }
 
@@ -2108,7 +2108,7 @@ namespace steemit {
                 return;
             }
 
-            utility::comment_reward_context ctx;
+            utilities::comment_reward_context ctx;
             fill_comment_reward_context_global_state(ctx, *this);
 
             int count = 0;
@@ -2436,11 +2436,11 @@ namespace steemit {
         }
 
         asset database::to_sbd(const asset &steem) const {
-            return utility::to_sbd(get_feed_history().current_median_history, steem);
+            return utilities::to_sbd(get_feed_history().current_median_history, steem);
         }
 
         asset database::to_steem(const asset &sbd) const {
-            return utility::to_steem(get_feed_history().current_median_history, sbd);
+            return utilities::to_steem(get_feed_history().current_median_history, sbd);
         }
 
         void database::account_recovery_processing() {
@@ -4372,7 +4372,7 @@ namespace steemit {
                 for (auto itr = comment_idx.begin();
                      itr != comment_idx.end(); ++itr) {
                     if (itr->net_rshares.value > 0) {
-                        auto delta = utility::calculate_vshares(itr->net_rshares.value);
+                        auto delta = utilities::calculate_vshares(itr->net_rshares.value);
                         total_rshares2 += delta;
                     }
                     if (itr->parent_author == STEEMIT_ROOT_POST_PARENT) {
@@ -4447,7 +4447,7 @@ namespace steemit {
 
                 for (const auto &c : comments) {
                     if (c.net_rshares.value > 0) {
-                        adjust_rshares2(c, 0, utility::calculate_vshares(c.net_rshares.value));
+                        adjust_rshares2(c, 0, utilities::calculate_vshares(c.net_rshares.value));
                     }
                 }
 
