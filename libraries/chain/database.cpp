@@ -2137,7 +2137,6 @@ namespace steemit {
 
                 funds.push_back(rf_ctx);
             }
->>>>>>> 86-comment-reward-pool
 
             const auto &cidx = get_index<comment_index>().indices().get<by_cashout_time>();
             const auto &com_by_root = get_index<comment_index>().indices().get<by_root>();
