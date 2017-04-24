@@ -4,7 +4,7 @@
 #include <steemit/chain/steem_objects.hpp>
 #include <steemit/chain/block_summary_object.hpp>
 
-#include <steemit/chain/util/reward.hpp>
+#include <steemit/chain/utilities/reward.hpp>
 
 #ifndef IS_LOW_MEM
 
@@ -422,12 +422,13 @@ namespace steemit {
                 if (itr == by_permlink_idx.end()) {
                     if (o.parent_author != STEEMIT_ROOT_POST_PARENT) {
                         FC_ASSERT(_db.get(parent->root_comment).allow_replies, "The parent comment has disabled replies.");
-                                 if(_db.has_hardfork( STEEMIT_HARDFORK_0_12__177) && !_db.has_hardfork(STEEMIT_HARDFORK_0_17__97)) {
+                        if (_db.has_hardfork(STEEMIT_HARDFORK_0_12__177) &&
+                            !_db.has_hardfork(STEEMIT_HARDFORK_0_17__97)) {
 
                             FC_ASSERT(
                                     _db.calculate_discussion_payout_time(*parent) !=
                                     fc::time_point_sec::maximum(), "Discussion is frozen.");
-                                    }
+                        }
                     }
 
                     auto band = _db.find<account_bandwidth_object, by_account_bandwidth_type>(boost::make_tuple(o.author, bandwidth_type::post));
@@ -1195,11 +1196,13 @@ namespace steemit {
                 }
 
                 if (_db.has_hardfork(STEEMIT_HARDFORK_0_14__259)) {
-                    FC_ASSERT(abs_rshares > 30000000 || o.weight ==
-                                                        0, "Voting weight is too small, please accumulate more voting power or steem power.");
+                    FC_ASSERT(abs_rshares > STEEMIT_VOTE_DUST_THRESHOLD ||
+                              o.weight ==
+                              0, "Voting weight is too small, please accumulate more voting power or steem power.");
                 } else if (_db.has_hardfork(STEEMIT_HARDFORK_0_13__248)) {
-                    FC_ASSERT(abs_rshares > 30000000 || abs_rshares ==
-                                                        1, "Voting weight is too small, please accumulate more voting power or steem power.");
+                    FC_ASSERT(abs_rshares > STEEMIT_VOTE_DUST_THRESHOLD ||
+                              abs_rshares ==
+                              1, "Voting weight is too small, please accumulate more voting power or steem power.");
                 }
 
 
@@ -1298,8 +1301,8 @@ namespace steemit {
                     fc::uint128_t new_rshares = std::max(comment.net_rshares.value, int64_t(0));
 
                     /// calculate rshares2 value
-                    new_rshares = util::calculate_vshares(new_rshares);
-                    old_rshares = util::calculate_vshares(old_rshares);
+                    new_rshares = utilities::calculate_vshares(new_rshares);
+                    old_rshares = utilities::calculate_vshares(old_rshares);
 
                     const auto &cat = _db.get_category(comment.category);
                     _db.modify(cat, [&](category_object &c) {
@@ -1334,9 +1337,19 @@ namespace steemit {
                         cv.vote_percent = o.weight;
                         cv.last_update = _db.head_block_time();
 
-                        if (rshares > 0 &&
-                            (comment.last_payout == fc::time_point_sec()) &&
-                            comment.allow_curation_rewards) {
+                        bool curation_reward_eligible = rshares > 0 &&
+                                                        (comment.last_payout ==
+                                                         fc::time_point_sec()) &&
+                                                        comment.allow_curation_rewards;
+
+                        if (curation_reward_eligible &&
+                            _db.has_hardfork(STEEMIT_HARDFORK_0_17__86)) {
+                            curation_reward_eligible =
+                                    _db.get_curation_rewards_percent(comment) >
+                                    0;
+                        }
+
+                        if (curation_reward_eligible) {
                             if (comment.created <
                                 fc::time_point_sec(STEEMIT_HARDFORK_0_6_REVERSE_AUCTION_TIME)) {
                                 u512 rshares3(rshares);
@@ -1358,13 +1371,13 @@ namespace steemit {
                                             (std::numeric_limits<uint64_t>::max() *
                                              fc::uint128_t(old_vote_rshares.value)) /
                                             (2 *
-                                             util::get_content_constant_s() +
+                                             utilities::get_content_constant_s() +
                                              old_vote_rshares.value)).to_uint64();
                                     uint64_t new_weight = (
                                             (std::numeric_limits<uint64_t>::max() *
                                              fc::uint128_t(comment.vote_rshares.value)) /
                                             (2 *
-                                             util::get_content_constant_s() +
+                                             utilities::get_content_constant_s() +
                                              comment.vote_rshares.value)).to_uint64();
                                     cv.weight = new_weight - old_weight;
                                 } else {
@@ -1373,7 +1386,7 @@ namespace steemit {
                                              fc::uint128_t(10000 *
                                                            old_vote_rshares.value)) /
                                             (2 *
-                                             util::get_content_constant_s() +
+                                             utilities::get_content_constant_s() +
                                              (10000 *
                                               old_vote_rshares.value))).to_uint64();
                                     uint64_t new_weight = (
@@ -1381,7 +1394,7 @@ namespace steemit {
                                              fc::uint128_t(10000 *
                                                            comment.vote_rshares.value)) /
                                             (2 *
-                                             util::get_content_constant_s() +
+                                             utilities::get_content_constant_s() +
                                              (10000 *
                                               comment.vote_rshares.value))).to_uint64();
                                     cv.weight = new_weight - old_weight;
@@ -1415,7 +1428,10 @@ namespace steemit {
                         });
                     }
 
-                    _db.adjust_rshares2(comment, old_rshares, new_rshares);
+                    if (!_db.has_hardfork(STEEMIT_HARDFORK_0_17__86)) {
+                        _db.adjust_rshares2(comment, old_rshares, new_rshares);
+                    }
+
                 } else {
                     FC_ASSERT(itr->num_changes <
                               STEEMIT_MAX_VOTE_CHANGES, "Voter has used the maximum number of vote changes on this comment.");
@@ -1510,8 +1526,8 @@ namespace steemit {
                     fc::uint128_t new_rshares = std::max(comment.net_rshares.value, int64_t(0));
 
                     /// calculate rshares2 value
-                    new_rshares = util::calculate_vshares(new_rshares);
-                    old_rshares = util::calculate_vshares(old_rshares);
+                    new_rshares = utilities::calculate_vshares(new_rshares);
+                    old_rshares = utilities::calculate_vshares(old_rshares);
 
                     _db.modify(comment, [&](comment_object &c) {
                         c.total_vote_weight -= itr->weight;
@@ -1525,7 +1541,9 @@ namespace steemit {
                         cv.num_changes += 1;
                     });
 
-                    _db.adjust_rshares2(comment, old_rshares, new_rshares);
+                    if (!_db.has_hardfork(STEEMIT_HARDFORK_0_17__86)) {
+                        _db.adjust_rshares2(comment, old_rshares, new_rshares);
+                    }
                 }
 
             } FC_CAPTURE_AND_RETHROW((o))
