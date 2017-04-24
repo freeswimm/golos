@@ -640,9 +640,10 @@ FC_API(steemit::app::database_api,
                 // content
                 (get_content)
                 (get_content_replies)
+                (get_payout_window_extension_cost_by_time)
+                (get_payout_window_extension_time_by_cost)
                 (get_discussions_by_author_before_date)
                 (get_replies_by_last_update)
-
 
                 // Witnesses
                 (get_witnesses)
