@@ -298,7 +298,7 @@ namespace steemit {
         composite_key_compare <std::less<account_name_type>, strcmp_less, std::less<comment_id_type>>
         >
         /// NON_CONSENSUS INDICIES - used by APIs
-#ifndef IS_LOW_MEM
+#ifndef STEEM_BUILD_LOW_MEMORY
         ,
         ordered_unique <tag<by_last_update>,
         composite_key<comment_object,
