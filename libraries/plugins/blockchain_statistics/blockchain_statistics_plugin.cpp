@@ -327,12 +327,22 @@ namespace steemit {
                         auto &account = db.get_account(op.account);
                         const auto &bucket = db.get(bucket_id);
 
-                        auto new_vesting_withdrawal_rate =
-                                op.vesting_shares.amount /
-                                STEEMIT_VESTING_WITHDRAW_INTERVALS;
+                        share_type new_vesting_withdrawal_rate;
+
+                        if (db.has_hardfork(STEEMIT_HARDFORK_0_17__103)) {
+                            op.vesting_shares.amount /
+                            STEEMIT_VESTING_WITHDRAW_INTERVALS;
+                        } else if (db.has_hardfork(STEEMIT_HARDFORK_0_16)) {
+                            op.vesting_shares.amount /
+                            STEEMIT_VESTING_WITHDRAW_INTERVALS_PRE_HF_17;
+                        } else {
+                            op.vesting_shares.amount /
+                            STEEMIT_VESTING_WITHDRAW_INTERVALS_PRE_HF_16;
+                        }
+
                         if (op.vesting_shares.amount > 0 &&
                             new_vesting_withdrawal_rate == 0) {
-                                new_vesting_withdrawal_rate = 1;
+                            new_vesting_withdrawal_rate = 1;
                         }
 
                         if (!db.has_hardfork(STEEMIT_HARDFORK_0_1)) {
