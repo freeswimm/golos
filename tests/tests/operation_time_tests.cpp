@@ -9,7 +9,8 @@
 #include <steemit/chain/hardfork.hpp>
 #include <steemit/chain/history_object.hpp>
 #include <steemit/chain/steem_objects.hpp>
-#include <steemit/chain/utilities/reward.hpp>
+
+#include <steemit/chain/evaluators/reward.hpp>
 
 #include <steemit/plugins/debug_node/debug_node_plugin.hpp>
 
@@ -2856,43 +2857,6 @@ BOOST_AUTO_TEST_CASE( nested_comments )
             BOOST_REQUIRE(
                     db.get_comment("alice", string("test")).cashout_time !=
                     fc::time_point_sec::maximum());
-
-            generate_blocks(db.get_comment("alice", string("test")).cashout_time, true);
-
-            BOOST_REQUIRE(db.get_comment("alice", string("test")).last_payout ==
-                          db.head_block_time());
-            BOOST_REQUIRE(
-                    db.get_comment("alice", string("test")).cashout_time ==
-                    db.head_block_time() + STEEMIT_SECOND_CASHOUT_WINDOW);
-
-            tx.operations.clear();
-            tx.signatures.clear();
-
-            tx.operations.push_back(vote);
-            tx.set_expiration(
-                    db.head_block_time() + STEEMIT_MAX_TIME_UNTIL_EXPIRATION);
-            tx.sign(bob_private_key, db.get_chain_id());
-            STEEMIT_REQUIRE_THROW(db.push_transaction(tx, 0), fc::exception);
-
-            vote.voter = "sam";
-
-            tx.operations.clear();
-            tx.signatures.clear();
-
-            tx.operations.push_back(vote);
-            tx.set_expiration(
-                    db.head_block_time() + STEEMIT_MAX_TIME_UNTIL_EXPIRATION);
-            tx.sign(sam_private_key, db.get_chain_id());
-            db.push_transaction(tx, 0);
-
-            comment.body = "test3";
-
-            tx.operations.clear();
-            tx.signatures.clear();
-
-            tx.operations.push_back(comment);
-            tx.sign(alice_private_key, db.get_chain_id());
-            db.push_transaction(tx, 0);
 
             generate_blocks(db.get_comment("alice", string("test")).cashout_time, true);
 

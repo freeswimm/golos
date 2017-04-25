@@ -96,6 +96,7 @@ namespace steemit {
         enum comment_mode {
             first_payout,
             second_payout,
+            extended_payout,
             archived
         };
 
@@ -137,16 +138,17 @@ namespace steemit {
              */
             fc::uint128_t children_rshares2;
 
-            /// index on pending_payout for "things happning now... needs moderation"
+            /// index on pending_payout for "things happening now... needs moderation"
             /// TRENDING = UNCLAIMED + PENDING
-            share_type net_rshares; // reward is proportional to rshares^2, this is the sum of all votes (positive and negative)
-            share_type abs_rshares; /// this is used to track the total abs(weight) of votes for the purpose of calculating cashout_time
-            share_type vote_rshares; /// Total positive rshares from all votes. Used to calculate delta weights. Needed to handle vote changing and removal.
+            share_type net_rshares; ///< reward is proportional to rshares^2, this is the sum of all votes (positive and negative)
+            share_type abs_rshares; ///< this is used to track the total abs(weight) of votes for the purpose of calculating cashout_time
+            share_type vote_rshares; ///< Total positive rshares from all votes. Used to calculate delta weights. Needed to handle vote changing and removal.
 
-            share_type children_abs_rshares; /// this is used to calculate cashout time of a discussion.
-            time_point_sec cashout_time; /// 24 hours from the weighted average of vote time
+            share_type children_abs_rshares; ///< this is used to calculate cashout time of a discussion
+            time_point_sec cashout_time; ///< 24 hours from the weighted average of vote time
             time_point_sec max_cashout_time;
-            uint64_t total_vote_weight = 0; /// the total weight of voting rewards, used to calculate pro-rata share of curation payouts
+            uint64_t total_vote_weight = 0; ///< the total weight of voting rewards, used to calculate pro-rata share of curation payouts
+            uint64_t cashout_windows_amount = 0; ///< the total amount of cashout windows the comment had
 
             uint16_t reward_weight = 0;
 
@@ -325,7 +327,7 @@ namespace steemit {
     }
 } // steemit::chain
 
-FC_REFLECT_ENUM(steemit::chain::comment_mode, (first_payout)(second_payout)(archived))
+FC_REFLECT_ENUM(steemit::chain::comment_mode, (first_payout)(second_payout)(extended_payout)(archived))
 
 FC_REFLECT(steemit::chain::comment_object,
         (id)(author)(permlink)

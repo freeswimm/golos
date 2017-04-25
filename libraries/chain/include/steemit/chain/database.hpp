@@ -34,7 +34,7 @@ namespace steemit {
         struct operation_notification;
 
         namespace utilities {
-            struct comment_reward_context;
+            class comment_reward_context;
         }
 
         /**
@@ -140,7 +140,6 @@ namespace steemit {
             std::vector<block_id_type> get_block_ids_on_fork(block_id_type head_of_fork) const;
 
             chain_id_type get_chain_id() const;
-
 
             const witness_object &get_witness(const account_name_type &name) const;
 

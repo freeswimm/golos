@@ -347,7 +347,7 @@ namespace steemit {
              */
             bool verify_authority(const signed_transaction &trx) const;
 
-            /*
+            /**
              * @return true if the signers have enough authority to authorize an account
              */
             bool verify_account_authority(const std::string &name_or_id, const flat_set<public_key_type> &signers) const;
@@ -363,6 +363,26 @@ namespace steemit {
             discussion get_content(std::string author, std::string permlink) const;
 
             std::vector<discussion> get_content_replies(std::string parent, std::string parent_permlink) const;
+
+            /**
+             * Used to retrieve comment payout window extension cost by time
+             * @param author comment author
+             * @param permlink comment permlink
+             * @param time deadline time the payout window pretends to be extended for
+             * @return SBD amount required to set payout window duration up to time passed
+             */
+
+            asset get_payout_window_extension_cost_by_time(std::string author, std::string permlink, fc::time_point_sec time) const;
+
+            /**
+             * Used o retrieve comment payout window extension time by cost
+             * @param author comment author
+             * @param permlink comment permlink
+             * @param cost SBD amount pretended to be spent on extension
+             * @return deadline time the payout window pretends to be extended for
+             */
+
+            fc::time_point_sec get_payout_window_extension_time_by_cost(std::string author, std::string permlink, asset cost) const;
 
             /**
              * Used to retrieve top 1000 tags list used by an author sorted by most frequently used
@@ -620,9 +640,10 @@ FC_API(steemit::app::database_api,
                 // content
                 (get_content)
                 (get_content_replies)
+                (get_payout_window_extension_cost_by_time)
+                (get_payout_window_extension_time_by_cost)
                 (get_discussions_by_author_before_date)
                 (get_replies_by_last_update)
-
 
                 // Witnesses
                 (get_witnesses)

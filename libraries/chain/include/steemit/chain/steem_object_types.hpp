@@ -5,7 +5,6 @@
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/mem_fun.hpp>
 
-//#include <graphene/db2/database.hpp>
 #include <chainbase/chainbase.hpp>
 
 #include <steemit/protocol/types.hpp>

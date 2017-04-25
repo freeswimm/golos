@@ -46,16 +46,3 @@ namespace steemit {
 
     }
 }
-
-#define DEFINE_EVALUATOR(X) \
-class X ## _evaluator : public steemit::chain::evaluator_impl< X ## _evaluator > \
-{                                                                           \
-   public:                                                                  \
-      typedef protocol:: X ## _operation operation_type;                               \
-                                                                            \
-      X ## _evaluator( database& db )                                       \
-         : steemit::chain::evaluator_impl< X ## _evaluator >( db )          \
-      {}                                                                    \
-                                                                            \
-      void do_apply( const protocol:: X ## _operation& o );                            \
-};

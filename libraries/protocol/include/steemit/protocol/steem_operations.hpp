@@ -9,8 +9,8 @@
 
 namespace steemit {
     namespace protocol {
-
-        struct account_create_operation : public base_operation {
+        class account_create_operation : public base_operation {
+        public:
             asset fee;
             account_name_type creator;
             account_name_type new_account_name;
@@ -28,7 +28,8 @@ namespace steemit {
         };
 
 
-        struct account_update_operation : public base_operation {
+        class account_update_operation : public base_operation {
+        public:
             account_name_type account;
             optional<authority> owner;
             optional<authority> active;
@@ -51,13 +52,16 @@ namespace steemit {
             }
         };
 
-
-        struct comment_operation : public base_operation {
-            account_name_type parent_author;
-            string parent_permlink;
-
+        class comment_base_operation : public base_operation {
+        public:
             account_name_type author;
             string permlink;
+        };
+
+        class comment_operation : public comment_base_operation {
+        public:
+            account_name_type parent_author;
+            string parent_permlink;
 
             string title;
             string body;
@@ -70,6 +74,26 @@ namespace steemit {
             }
         };
 
+        class comment_payout_extension_operation
+                : public comment_base_operation {
+        public:
+            optional<fc::time_point_sec> extension_time;
+            optional<asset> amount;
+
+            void validate() const;
+
+            void get_required_active_authorities(flat_set<account_name_type> &a) const {
+                if (amount && amount->symbol == SBD_SYMBOL) {
+                    a.insert(author);
+                }
+            }
+
+            void get_required_owner_authorities(flat_set<account_name_type> &a) const {
+                if (amount && amount->symbol == SBD_SYMBOL) {
+                    a.insert(author);
+                }
+            }
+        };
 
         /**
          *  Authors of posts may not want all of the benefits that come from creating a post. This
@@ -79,14 +103,12 @@ namespace steemit {
          *  The percent_steem_dollars may be decreased, but never increased
          *
          */
-        struct comment_options_operation : public base_operation {
-            account_name_type author;
-            string permlink;
-
+        class comment_options_operation : public comment_base_operation {
+        public:
             asset max_accepted_payout = asset(1000000000, SBD_SYMBOL);       /// SBD value of the maximum payout this post will receive
-            uint16_t percent_steem_dollars = STEEMIT_100_PERCENT; /// the percent of Golos Dollars to key, unkept amounts will be received as Golos Power
+            uint16_t percent_steem_dollars = STEEMIT_100_PERCENT; /// the percent of Golos to key, unkept amounts will be received as Golos Power
             bool allow_votes = true;      /// allows a post to receive votes;
-            bool allow_curation_rewards = true; /// allows voters to recieve curation rewards. Rewards return to reward fund.
+            bool allow_curation_rewards = true; /// allows voters to receive curation rewards. Rewards return to reward fund.
             extensions_type extensions;
 
             void validate() const;
@@ -97,7 +119,8 @@ namespace steemit {
         };
 
 
-        struct challenge_authority_operation : public base_operation {
+        class challenge_authority_operation : public base_operation {
+        public:
             account_name_type challenger;
             account_name_type challenged;
             bool require_owner = false;
@@ -109,7 +132,8 @@ namespace steemit {
             }
         };
 
-        struct prove_authority_operation : public base_operation {
+        class prove_authority_operation : public base_operation {
+        public:
             account_name_type challenged;
             bool require_owner = false;
 
@@ -129,7 +153,8 @@ namespace steemit {
         };
 
 
-        struct delete_comment_operation : public base_operation {
+        class delete_comment_operation : public base_operation {
+        public:
             account_name_type author;
             string permlink;
 
@@ -141,10 +166,9 @@ namespace steemit {
         };
 
 
-        struct vote_operation : public base_operation {
+        class vote_operation : public comment_base_operation {
+        public:
             account_name_type voter;
-            account_name_type author;
-            string permlink;
             int16_t weight = 0;
 
             void validate() const;
@@ -160,7 +184,8 @@ namespace steemit {
          *
          * @brief Transfers STEEM from one account to another.
          */
-        struct transfer_operation : public base_operation {
+        class transfer_operation : public base_operation {
+        public:
             account_name_type from;
             /// Account to transfer asset to
             account_name_type to;
@@ -205,7 +230,8 @@ namespace steemit {
          *  Escrow transactions are uniquely identified by 'from' and 'escrow_id', the 'escrow_id' is defined
          *  by the sender.
          */
-        struct escrow_transfer_operation : public base_operation {
+        class escrow_transfer_operation : public base_operation {
+        public:
             account_name_type from;
             account_name_type to;
             account_name_type agent;
@@ -215,8 +241,8 @@ namespace steemit {
             asset steem_amount = asset(0, STEEM_SYMBOL);
             asset fee;
 
-            time_point_sec ratification_deadline;
-            time_point_sec escrow_expiration;
+            fc::time_point_sec ratification_deadline;
+            fc::time_point_sec escrow_expiration;
 
             string json_meta;
 
@@ -233,7 +259,8 @@ namespace steemit {
          *  the blockchain. Once a part approves the escrow, the cannot revoke their approval.
          *  Subsequent escrow approve operations, regardless of the approval, will be rejected.
          */
-        struct escrow_approve_operation : public base_operation {
+        class escrow_approve_operation : public base_operation {
+        public:
             account_name_type from;
             account_name_type to;
             account_name_type agent;
@@ -255,7 +282,8 @@ namespace steemit {
          *  raise it for dispute. Once a payment is in dispute, the agent has authority over
          *  who gets what.
          */
-        struct escrow_dispute_operation : public base_operation {
+        class escrow_dispute_operation : public base_operation {
+        public:
             account_name_type from;
             account_name_type to;
             account_name_type agent;
@@ -281,7 +309,8 @@ namespace steemit {
          *  If there is a dispute regardless of expiration, the agent can release funds to either party
          *     following whichever agreement was in place between the parties.
          */
-        struct escrow_release_operation : public base_operation {
+        class escrow_release_operation : public base_operation {
+        public:
             account_name_type from;
             account_name_type to; ///< the original 'to'
             account_name_type agent;
@@ -306,7 +335,8 @@ namespace steemit {
          *  give another account vesting shares so that faucets can
          *  pre-fund new accounts with vesting shares.
          */
-        struct transfer_to_vesting_operation : public base_operation {
+        class transfer_to_vesting_operation : public base_operation {
+        public:
             account_name_type from;
             account_name_type to; ///< if null, then same as from
             asset amount; ///< must be STEEM
@@ -330,7 +360,8 @@ namespace steemit {
          *
          * This operation is not valid if the user has no vesting shares.
          */
-        struct withdraw_vesting_operation : public base_operation {
+        class withdraw_vesting_operation : public base_operation {
+        public:
             account_name_type account;
             asset vesting_shares;
 
@@ -349,7 +380,8 @@ namespace steemit {
          * can be immediately vested again, circumventing the conversion from
          * vests to steem and back, guaranteeing they maintain their value.
          */
-        struct set_withdraw_vesting_route_operation : public base_operation {
+        class set_withdraw_vesting_route_operation : public base_operation {
+        public:
             account_name_type from_account;
             account_name_type to_account;
             uint16_t percent = 0;
@@ -368,7 +400,8 @@ namespace steemit {
          * and well functioning network.  Any time @owner is in the active set of witnesses these
          * properties will be used to control the blockchain configuration.
          */
-        struct chain_properties {
+        class chain_properties {
+        public:
             /**
              *  This fee, paid in STEEM, is converted into VESTING SHARES for the new account. Accounts
              *  without vesting shares cannot earn usage rations and therefore are powerless. This minimum
@@ -409,7 +442,8 @@ namespace steemit {
          *  contention.  The network will pick the top 21 witnesses for
          *  producing blocks.
          */
-        struct witness_update_operation : public base_operation {
+        class witness_update_operation : public base_operation {
+        public:
             account_name_type owner;
             string url;
             public_key_type block_signing_key;
@@ -429,7 +463,8 @@ namespace steemit {
          *
          * If a proxy is specified then all existing votes are removed.
          */
-        struct account_witness_vote_operation : public base_operation {
+        class account_witness_vote_operation : public base_operation {
+        public:
             account_name_type account;
             account_name_type witness;
             bool approve = true;
@@ -442,7 +477,8 @@ namespace steemit {
         };
 
 
-        struct account_witness_proxy_operation : public base_operation {
+        class account_witness_proxy_operation : public base_operation {
+        public:
             account_name_type account;
             account_name_type proxy;
 
@@ -460,7 +496,8 @@ namespace steemit {
          *
          * There is no validation for this operation other than that required auths are valid
          */
-        struct custom_operation : public base_operation {
+        class custom_operation : public base_operation {
+        public:
             flat_set<account_name_type> required_auths;
             uint16_t id = 0;
             vector<char> data;
@@ -474,11 +511,11 @@ namespace steemit {
             }
         };
 
-
         /** serves the same purpose as custom_operation but also supports required posting authorities. Unlike custom_operation,
          * this operation is designed to be human readable/developer friendly.
          **/
-        struct custom_json_operation : public base_operation {
+        class custom_json_operation : public base_operation {
+        public:
             flat_set<account_name_type> required_auths;
             flat_set<account_name_type> required_posting_auths;
             string id; ///< must be less than 32 characters long
@@ -500,7 +537,8 @@ namespace steemit {
         };
 
 
-        struct custom_binary_operation : public base_operation {
+        class custom_binary_operation : public base_operation {
+        public:
             flat_set<account_name_type> required_owner_auths;
             flat_set<account_name_type> required_active_auths;
             flat_set<account_name_type> required_posting_auths;
@@ -541,7 +579,8 @@ namespace steemit {
          *  Feeds can only be published by the top N witnesses which are included in every round and are
          *  used to define the exchange rate between steem and the dollar.
          */
-        struct feed_publish_operation : public base_operation {
+        class feed_publish_operation : public base_operation {
+        public:
             account_name_type publisher;
             price exchange_rate;
 
@@ -554,10 +593,11 @@ namespace steemit {
 
 
         /**
-         *  This operation instructs the blockchain to start a conversion between STEEM and SBD,
+         *  This operation inclasss the blockchain to start a conversion between STEEM and SBD,
          *  The funds are deposited after STEEMIT_CONVERSION_DELAY
          */
-        struct convert_operation : public base_operation {
+        class convert_operation : public base_operation {
+        public:
             account_name_type owner;
             uint32_t requestid = 0;
             asset amount;
@@ -573,13 +613,14 @@ namespace steemit {
         /**
          * This operation creates a limit order and matches it against existing open orders.
          */
-        struct limit_order_create_operation : public base_operation {
+        class limit_order_create_operation : public base_operation {
+        public:
             account_name_type owner;
             uint32_t orderid = 0; /// an ID assigned by owner, must be unique
             asset amount_to_sell;
             asset min_to_receive;
             bool fill_or_kill = false;
-            time_point_sec expiration = time_point_sec::maximum();
+            fc::time_point_sec expiration = fc::time_point_sec::maximum();
 
             void validate() const;
 
@@ -604,13 +645,14 @@ namespace steemit {
          *  This operation is identical to limit_order_create except it serializes the price rather
          *  than calculating it from other fields.
          */
-        struct limit_order_create2_operation : public base_operation {
+        class limit_order_create2_operation : public base_operation {
+        public:
             account_name_type owner;
             uint32_t orderid = 0; /// an ID assigned by owner, must be unique
             asset amount_to_sell;
             bool fill_or_kill = false;
             price exchange_rate;
-            time_point_sec expiration = time_point_sec::maximum();
+            fc::time_point_sec expiration = fc::time_point_sec::maximum();
 
             void validate() const;
 
@@ -634,7 +676,8 @@ namespace steemit {
         /**
          *  Cancels an order and returns the balance to owner.
          */
-        struct limit_order_cancel_operation : public base_operation {
+        class limit_order_cancel_operation : public base_operation {
+        public:
             account_name_type owner;
             uint32_t orderid = 0;
 
@@ -646,7 +689,8 @@ namespace steemit {
         };
 
 
-        struct pow {
+        class pow {
+        public:
             public_key_type worker;
             digest_type input;
             signature_type signature;
@@ -658,7 +702,8 @@ namespace steemit {
         };
 
 
-        struct pow_operation : public base_operation {
+        class pow_operation : public base_operation {
+        public:
             account_name_type worker_account;
             block_id_type block_id;
             uint64_t nonce = 0;
@@ -679,14 +724,16 @@ namespace steemit {
         };
 
 
-        struct pow2_input {
+        class pow2_input {
+        public:
             account_name_type worker_account;
             block_id_type prev_block;
             uint64_t nonce = 0;
         };
 
 
-        struct pow2 {
+        class pow2 {
+        public:
             pow2_input input;
             uint32_t pow_summary = 0;
 
@@ -695,7 +742,8 @@ namespace steemit {
             void validate() const;
         };
 
-        struct equihash_pow {
+        class equihash_pow {
+        public:
             pow2_input input;
             fc::equihash::proof proof;
             block_id_type prev_block;
@@ -708,7 +756,8 @@ namespace steemit {
 
         typedef fc::static_variant<pow2, equihash_pow> pow2_work;
 
-        struct pow2_operation : public base_operation {
+        class pow2_operation : public base_operation {
+        public:
             pow2_work work;
             optional<public_key_type> new_owner_key;
             chain_properties props;
@@ -738,7 +787,8 @@ namespace steemit {
          * The result of the operation is to transfer the full VESTING STEEM balance
          * of the block producer to the reporter.
          */
-        struct report_over_production_operation : public base_operation {
+        class report_over_production_operation : public base_operation {
+        public:
             account_name_type reporter;
             signed_block_header first_block;
             signed_block_header second_block;
@@ -774,7 +824,8 @@ namespace steemit {
          * The account to recover confirms its identity to the blockchain in
          * the recover account operation.
          */
-        struct request_account_recovery_operation : public base_operation {
+        class request_account_recovery_operation : public base_operation {
+        public:
             account_name_type recovery_account;       ///< The recovery account is listed as the recovery account on the account to recover.
 
             account_name_type account_to_recover;     ///< The account to recover. This is likely due to a compromised owner authority.
@@ -829,7 +880,8 @@ namespace steemit {
          * complicated, but that is an application level concern, not the blockchain's
          * concern.
          */
-        struct recover_account_operation : public base_operation {
+        class recover_account_operation : public base_operation {
+        public:
             account_name_type account_to_recover;        ///< The account to be recovered
 
             authority new_owner_authority;       ///< The new owner authority as specified in the request account recovery operation.
@@ -851,7 +903,8 @@ namespace steemit {
          *  This operation allows recovery_accoutn to change account_to_reset's owner authority to
          *  new_owner_authority after 60 days of inactivity.
          */
-        struct reset_account_operation : public base_operation {
+        class reset_account_operation : public base_operation {
+        public:
             account_name_type reset_account;
             account_name_type account_to_reset;
             authority new_owner_authority;
@@ -867,7 +920,8 @@ namespace steemit {
          * This operation allows 'account' owner to control which account has the power
          * to execute the 'reset_account_operation' after 60 days.
          */
-        struct set_reset_account_operation : public base_operation {
+        class set_reset_account_operation : public base_operation {
+        public:
             account_name_type account;
             account_name_type current_reset_account;
             account_name_type reset_account;
@@ -906,7 +960,8 @@ namespace steemit {
          * witness vote weights. The top voted witness is explicitly the most trusted
          * witness according to stake.
          */
-        struct change_recovery_account_operation : public base_operation {
+        class change_recovery_account_operation : public base_operation {
+        public:
             account_name_type account_to_recover;     ///< The account that would be recovered in case of compromise
             account_name_type new_recovery_account;   ///< The account that creates the recover request
             extensions_type extensions;             ///< Extensions. Not currently used.
@@ -919,7 +974,8 @@ namespace steemit {
         };
 
 
-        struct transfer_to_savings_operation : public base_operation {
+        class transfer_to_savings_operation : public base_operation {
+        public:
             account_name_type from;
             account_name_type to;
             asset amount;
@@ -933,7 +989,8 @@ namespace steemit {
         };
 
 
-        struct transfer_from_savings_operation : public base_operation {
+        class transfer_from_savings_operation : public base_operation {
+        public:
             account_name_type from;
             uint32_t request_id = 0;
             account_name_type to;
@@ -948,7 +1005,8 @@ namespace steemit {
         };
 
 
-        struct cancel_transfer_from_savings_operation : public base_operation {
+        class cancel_transfer_from_savings_operation : public base_operation {
+        public:
             account_name_type from;
             uint32_t request_id = 0;
 
@@ -960,7 +1018,8 @@ namespace steemit {
         };
 
 
-        struct decline_voting_rights_operation : public base_operation {
+        class decline_voting_rights_operation : public base_operation {
+        public:
             account_name_type account;
             bool decline = true;
 
@@ -974,26 +1033,36 @@ namespace steemit {
 } // steemit::protocol
 
 
-FC_REFLECT(steemit::protocol::transfer_to_savings_operation, (from)(to)(amount)(memo))
-FC_REFLECT(steemit::protocol::transfer_from_savings_operation, (from)(request_id)(to)(amount)(memo))
-FC_REFLECT(steemit::protocol::cancel_transfer_from_savings_operation, (from)(request_id))
+FC_REFLECT(steemit::protocol::transfer_to_savings_operation,
+        (from)
+                (to)
+                (amount)
+                (memo));
 
-FC_REFLECT(steemit::protocol::reset_account_operation, (reset_account)(account_to_reset)(new_owner_authority))
-FC_REFLECT(steemit::protocol::set_reset_account_operation, (account)(current_reset_account)(reset_account))
+FC_REFLECT(steemit::protocol::transfer_from_savings_operation,
+        (from)
+                (request_id)
+                (to)
+                (amount)
+                (memo));
 
+FC_REFLECT(steemit::protocol::cancel_transfer_from_savings_operation, (from)(request_id));
 
-FC_REFLECT(steemit::protocol::report_over_production_operation, (reporter)(first_block)(second_block))
-FC_REFLECT(steemit::protocol::convert_operation, (owner)(requestid)(amount))
-FC_REFLECT(steemit::protocol::feed_publish_operation, (publisher)(exchange_rate))
-FC_REFLECT(steemit::protocol::pow, (worker)(input)(signature)(work))
-FC_REFLECT(steemit::protocol::pow2, (input)(pow_summary))
-FC_REFLECT(steemit::protocol::pow2_input, (worker_account)(prev_block)(nonce))
-FC_REFLECT(steemit::protocol::equihash_pow, (input)(proof)(prev_block)(pow_summary))
+FC_REFLECT(steemit::protocol::reset_account_operation, (reset_account)(account_to_reset)(new_owner_authority));
+FC_REFLECT(steemit::protocol::set_reset_account_operation, (account)(current_reset_account)(reset_account));
+
+FC_REFLECT(steemit::protocol::report_over_production_operation, (reporter)(first_block)(second_block));
+FC_REFLECT(steemit::protocol::convert_operation, (owner)(requestid)(amount));
+FC_REFLECT(steemit::protocol::feed_publish_operation, (publisher)(exchange_rate));
+FC_REFLECT(steemit::protocol::pow, (worker)(input)(signature)(work));
+FC_REFLECT(steemit::protocol::pow2, (input)(pow_summary));
+FC_REFLECT(steemit::protocol::pow2_input, (worker_account)(prev_block)(nonce));
+FC_REFLECT(steemit::protocol::equihash_pow, (input)(proof)(prev_block)(pow_summary));
 FC_REFLECT(steemit::protocol::chain_properties, (account_creation_fee)(maximum_block_size)(sbd_interest_rate));
 
-FC_REFLECT_TYPENAME(steemit::protocol::pow2_work)
-FC_REFLECT(steemit::protocol::pow_operation, (worker_account)(block_id)(nonce)(work)(props))
-FC_REFLECT(steemit::protocol::pow2_operation, (work)(new_owner_key)(props))
+FC_REFLECT_TYPENAME(steemit::protocol::pow2_work);
+FC_REFLECT(steemit::protocol::pow_operation, (worker_account)(block_id)(nonce)(work)(props));
+FC_REFLECT(steemit::protocol::pow2_operation, (work)(new_owner_key)(props));
 
 FC_REFLECT(steemit::protocol::account_create_operation,
         (fee)
@@ -1003,7 +1072,7 @@ FC_REFLECT(steemit::protocol::account_create_operation,
                 (active)
                 (posting)
                 (memo_key)
-                (json_metadata))
+                (json_metadata));
 
 FC_REFLECT(steemit::protocol::account_update_operation,
         (account)
@@ -1011,26 +1080,28 @@ FC_REFLECT(steemit::protocol::account_update_operation,
                 (active)
                 (posting)
                 (memo_key)
-                (json_metadata))
+                (json_metadata));
 
-FC_REFLECT(steemit::protocol::transfer_operation, (from)(to)(amount)(memo))
-FC_REFLECT(steemit::protocol::transfer_to_vesting_operation, (from)(to)(amount))
-FC_REFLECT(steemit::protocol::withdraw_vesting_operation, (account)(vesting_shares))
-FC_REFLECT(steemit::protocol::set_withdraw_vesting_route_operation, (from_account)(to_account)(percent)(auto_vest))
-FC_REFLECT(steemit::protocol::witness_update_operation, (owner)(url)(block_signing_key)(props)(fee))
-FC_REFLECT(steemit::protocol::account_witness_vote_operation, (account)(witness)(approve))
-FC_REFLECT(steemit::protocol::account_witness_proxy_operation, (account)(proxy))
-FC_REFLECT(steemit::protocol::comment_operation, (parent_author)(parent_permlink)(author)(permlink)(title)(body)(json_metadata))
-FC_REFLECT(steemit::protocol::vote_operation, (voter)(author)(permlink)(weight))
-FC_REFLECT(steemit::protocol::custom_operation, (required_auths)(id)(data))
-FC_REFLECT(steemit::protocol::custom_json_operation, (required_auths)(required_posting_auths)(id)(json))
-FC_REFLECT(steemit::protocol::custom_binary_operation, (required_owner_auths)(required_active_auths)(required_posting_auths)(required_auths)(id)(data))
-FC_REFLECT(steemit::protocol::limit_order_create_operation, (owner)(orderid)(amount_to_sell)(min_to_receive)(fill_or_kill)(expiration))
-FC_REFLECT(steemit::protocol::limit_order_create2_operation, (owner)(orderid)(amount_to_sell)(exchange_rate)(fill_or_kill)(expiration))
-FC_REFLECT(steemit::protocol::limit_order_cancel_operation, (owner)(orderid))
+FC_REFLECT(steemit::protocol::transfer_operation, (from)(to)(amount)(memo));
+FC_REFLECT(steemit::protocol::transfer_to_vesting_operation, (from)(to)(amount));
+FC_REFLECT(steemit::protocol::withdraw_vesting_operation, (account)(vesting_shares));
+FC_REFLECT(steemit::protocol::set_withdraw_vesting_route_operation, (from_account)(to_account)(percent)(auto_vest));
+FC_REFLECT(steemit::protocol::witness_update_operation, (owner)(url)(block_signing_key)(props)(fee));
+FC_REFLECT(steemit::protocol::account_witness_vote_operation, (account)(witness)(approve));
+FC_REFLECT(steemit::protocol::account_witness_proxy_operation, (account)(proxy));
+FC_REFLECT(steemit::protocol::comment_base_operation, (author)(permlink));
+FC_REFLECT_DERIVED(steemit::protocol::comment_operation, (steemit::protocol::comment_base_operation), (parent_author)(parent_permlink)(title)(body)(json_metadata));
+FC_REFLECT_DERIVED(steemit::protocol::comment_payout_extension_operation, (steemit::protocol::comment_base_operation), (amount)(extension_time));
+FC_REFLECT_DERIVED(steemit::protocol::vote_operation, (steemit::protocol::comment_base_operation), (voter)(weight));
+FC_REFLECT(steemit::protocol::custom_operation, (required_auths)(id)(data));
+FC_REFLECT(steemit::protocol::custom_json_operation, (required_auths)(required_posting_auths)(id)(json));
+FC_REFLECT(steemit::protocol::custom_binary_operation, (required_owner_auths)(required_active_auths)(required_posting_auths)(required_auths)(id)(data));
+FC_REFLECT(steemit::protocol::limit_order_create_operation, (owner)(orderid)(amount_to_sell)(min_to_receive)(fill_or_kill)(expiration));
+FC_REFLECT(steemit::protocol::limit_order_create2_operation, (owner)(orderid)(amount_to_sell)(exchange_rate)(fill_or_kill)(expiration));
+FC_REFLECT(steemit::protocol::limit_order_cancel_operation, (owner)(orderid));
 
 FC_REFLECT(steemit::protocol::delete_comment_operation, (author)(permlink));
-FC_REFLECT(steemit::protocol::comment_options_operation, (author)(permlink)(max_accepted_payout)(percent_steem_dollars)(allow_votes)(allow_curation_rewards)(extensions))
+FC_REFLECT_DERIVED(steemit::protocol::comment_options_operation, (steemit::protocol::comment_base_operation), (max_accepted_payout)(percent_steem_dollars)(allow_votes)(allow_curation_rewards)(extensions));
 
 FC_REFLECT(steemit::protocol::escrow_transfer_operation, (from)(to)(sbd_amount)(steem_amount)(escrow_id)(agent)(fee)(json_meta)(ratification_deadline)(escrow_expiration));
 FC_REFLECT(steemit::protocol::escrow_approve_operation, (from)(to)(agent)(who)(escrow_id)(approve));

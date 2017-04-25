@@ -21,8 +21,10 @@
 #include <steemit/chain/operation_notification.hpp>
 
 #include <steemit/chain/utilities/asset.hpp>
-#include <steemit/chain/utilities/reward.hpp>
 #include <steemit/chain/utilities/uint256.hpp>
+
+#include <steemit/chain/evaluators/reward.hpp>
+#include <steemit/chain/evaluators/payout_extension.hpp>
 
 #include <fc/smart_ref_impl.hpp>
 
@@ -1077,19 +1079,19 @@ namespace steemit {
             try {
                 const auto &cprops = get_dynamic_global_properties();
 
-                /**
-       *  The ratio of total_vesting_shares / total_vesting_fund_steem should not
-       *  change as the result of the user adding funds
-       *
-       *  V / C  = (V+Vn) / (C+Cn)
-       *
-       *  Simplifies to Vn = (V * Cn ) / C
-       *
-       *  If Cn equals o.amount, then we must solve for Vn to know how many new vesting shares
-       *  the user should receive.
-       *
-       *  128 bit math is requred due to multiplying of 64 bit numbers. This is done in asset and price.
-       */
+/**
+ *  The ratio of total_vesting_shares / total_vesting_fund_steem should not
+ *  change as the result of the user adding funds
+ *
+ *  V / C  = (V+Vn) / (C+Cn)
+ *
+ *  Simplifies to Vn = (V * Cn ) / C
+ *
+ *  If Cn equals o.amount, then we must solve for Vn to know how many new vesting shares
+ *  the user should receive.
+ *
+ *  128 bit math is required due to multiplying of 64 bit numbers. This is done in asset and price.
+ */
                 asset new_vesting = steem * cprops.get_vesting_share_price();
 
                 modify(to_account, [&](account_object &to) {
@@ -2054,11 +2056,13 @@ namespace steemit {
                     c.total_vote_weight = 0;
                     c.max_cashout_time = fc::time_point_sec::maximum();
 
-                    if (c.parent_author == STEEMIT_ROOT_POST_PARENT) {
+                    if (has_hardfork(STEEMIT_HARDFORK_0_17__91)) {
+                        c.cashout_time = fc::time_point_sec::maximum();
+                    } else if (c.parent_author == STEEMIT_ROOT_POST_PARENT) {
                         if (has_hardfork(STEEMIT_HARDFORK_0_12__177) &&
                             c.last_payout == fc::time_point_sec::min()) {
                             c.cashout_time = head_block_time() +
-                                             STEEMIT_SECOND_CASHOUT_WINDOW;
+                                             STEEMIT_SECOND_CASHOUT_WINDOW_SECONDS;
                         } else {
                             c.cashout_time = fc::time_point_sec::maximum();
                         }
@@ -2068,7 +2072,7 @@ namespace steemit {
                         fc::time_point_sec::maximum()) {
                         c.mode = archived;
                     } else {
-                        c.mode = second_payout;
+                        c.mode = comment_mode::second_payout;
                     }
 
                     c.last_payout = head_block_time();
@@ -2187,6 +2191,7 @@ namespace steemit {
                            itr->root_comment == current->root_comment) {
                         const auto &comment = *itr;
                         ++itr;
+
                         ctx.total_reward_shares2 = gpo.total_reward_shares2;
                         ctx.total_reward_fund_steem = gpo.total_reward_fund_steem;
 
@@ -2677,6 +2682,7 @@ namespace steemit {
             _my->_evaluator_registry.register_evaluator<vote_evaluator>();
             _my->_evaluator_registry.register_evaluator<comment_evaluator>();
             _my->_evaluator_registry.register_evaluator<comment_options_evaluator>();
+            _my->_evaluator_registry.register_evaluator<comment_payout_extension_evaluator<evaluators::comment_payout_extension>>();
             _my->_evaluator_registry.register_evaluator<delete_comment_evaluator>();
             _my->_evaluator_registry.register_evaluator<transfer_evaluator>();
             _my->_evaluator_registry.register_evaluator<transfer_to_vesting_evaluator>();
@@ -4220,17 +4226,17 @@ namespace steemit {
                 case STEEMIT_HARDFORK_0_1:
                     perform_vesting_share_split(10000);
 #ifdef STEEMIT_BUILD_TESTNET
-                    {
-                        custom_operation test_op;
-                        string op_msg = "Testnet: Hardfork applied";
-                        test_op.data = vector<char>(op_msg.begin(), op_msg.end());
-                        test_op.required_auths.insert(STEEMIT_INIT_MINER_NAME);
-                        operation op = test_op;   // we need the operation object to live to the end of this scope
-                        operation_notification note(op);
-                        notify_pre_apply_operation(note);
-                        notify_post_apply_operation(note);
-                    }
-                    break;
+                {
+                    custom_operation test_op;
+                    string op_msg = "Testnet: Hardfork applied";
+                    test_op.data = vector<char>(op_msg.begin(), op_msg.end());
+                    test_op.required_auths.insert(STEEMIT_INIT_MINER_NAME);
+                    operation op = test_op;   // we need the operation object to live to the end of this scope
+                    operation_notification note(op);
+                    notify_pre_apply_operation(note);
+                    notify_post_apply_operation(note);
+                }
+                break;
 #endif
                     break;
                 case STEEMIT_HARDFORK_0_2:
@@ -4244,21 +4250,26 @@ namespace steemit {
                     break;
                 case STEEMIT_HARDFORK_0_5:
                     break;
-                case STEEMIT_HARDFORK_0_6:
+                case STEEMIT_HARDFORK_0_6: {
                     retally_witness_vote_counts();
                     retally_comment_children();
+                }
                     break;
-                case STEEMIT_HARDFORK_0_7:
+                case STEEMIT_HARDFORK_0_7: {
+
+                }
                     break;
-                case STEEMIT_HARDFORK_0_8:
+                case STEEMIT_HARDFORK_0_8: {
                     retally_witness_vote_counts(true);
+                }
                     break;
                 case STEEMIT_HARDFORK_0_9: {
 
                 }
                     break;
-                case STEEMIT_HARDFORK_0_10:
+                case STEEMIT_HARDFORK_0_10: {
                     retally_liquidity_weight();
+                }
                     break;
                 case STEEMIT_HARDFORK_0_11:
                     break;
@@ -4279,17 +4290,17 @@ namespace steemit {
                                 fc::time_point_sec::maximum()) {
                                 modify(*itr, [&](comment_object &c) {
                                     c.cashout_time = head_block_time() +
-                                                     STEEMIT_CASHOUT_WINDOW_SECONDS;
+                                                     STEEMIT_CASHOUT_WINDOW_SECONDS_PRE_HF17;
                                     c.mode = first_payout;
                                 });
-                            }
+                            } else if (itr->last_payout >
+                                       fc::time_point_sec()) {
                                 // Has been paid out, needs to be on second cashout window
-                            else if (itr->last_payout >
-                                     fc::time_point_sec()) {
+
                                 modify(*itr, [&](comment_object &c) {
                                     c.cashout_time = c.last_payout +
-                                                     STEEMIT_SECOND_CASHOUT_WINDOW;
-                                    c.mode = second_payout;
+                                                     STEEMIT_SECOND_CASHOUT_WINDOW_SECONDS;
+                                    c.mode = comment_mode::second_payout;
                                 });
                             }
                         }
@@ -4311,13 +4322,19 @@ namespace steemit {
                     });
                 }
                     break;
-                case STEEMIT_HARDFORK_0_13:
+                case STEEMIT_HARDFORK_0_13: {
+
+                }
                     break;
-                case STEEMIT_HARDFORK_0_14:
+                case STEEMIT_HARDFORK_0_14: {
+
+                }
                     break;
-                case STEEMIT_HARDFORK_0_15:
+                case STEEMIT_HARDFORK_0_15: {
+
+                }
                     break;
-                case STEEMIT_HARDFORK_0_16:
+                case STEEMIT_HARDFORK_0_16: {
                     modify(get_feed_history(), [&](feed_history_object &fho) {
                         while (fho.price_history.size() >
                                STEEMIT_FEED_HISTORY_WINDOW) {
@@ -4352,6 +4369,7 @@ namespace steemit {
                         rfo.percent_content_rewards = 0;
                         rfo.content_constant = utilities::get_content_constant_s().to_uint64();
                     });
+                }
 
                     break;
                 case STEEMIT_HARDFORK_0_17: {
@@ -4376,6 +4394,54 @@ namespace steemit {
                         g.total_reward_fund_steem = asset(0, STEEM_SYMBOL);
                         g.total_reward_shares2 = 0;
                     });
+
+                    /*
+                    * For all current comments we will either keep their current cashout time, or extend it to 1 week
+                    * after creation.
+                            *
+                            * We cannot do a simple iteration by cashout time because we are editting cashout time.
+                                                                                                              * More specifically, we will be adding an explicit cashout time to all comments with parents.
+                                                                                                                                                                                                   * To find all discussions that have not been paid out we fir iterate over posts by cashout time.
+                                                                                                                                                                                                                                                                                              * Before the hardfork these are all root posts. Iterate over all of their children, adding each
+                    * to a specific list. Next, update payout times for all discussions on the root post. This defines
+                    * the min cashout time for each child in the discussion. Then iterate over the children and set
+                    * their cashout time in a similar way, grabbing the root post as their inherent cashout time.
+                                                                                                            */
+                    const auto &comment_idx = get_index<comment_index, by_cashout_time>();
+                    const auto &by_root_idx = get_index<comment_index, by_root>();
+                    vector<const comment_object *> root_posts;
+                    root_posts.reserve(60000);
+                    vector<const comment_object *> replies;
+                    replies.reserve(100000);
+
+                    for (auto itr = comment_idx.begin();
+                         itr != comment_idx.end() && itr->cashout_time <
+                                                     fc::time_point_sec::maximum(); ++itr) {
+
+                        root_posts.push_back(&(*itr));
+
+                        for (auto reply_itr = by_root_idx.lower_bound(itr->id);
+                             reply_itr != by_root_idx.end() &&
+                             reply_itr->root_comment == itr->id; ++reply_itr) {
+                            replies.push_back(&(*reply_itr));
+                        }
+                    }
+
+                    for (auto itr : root_posts) {
+                        modify(*itr, [&](comment_object &c) {
+                            c.cashout_time = std::max(c.created +
+                                                      STEEMIT_CASHOUT_WINDOW_SECONDS, c.cashout_time);
+                                                                        c.children_rshares2 = 0;
+                        });
+                    }
+
+                    for (auto itr : replies) {
+                        modify(*itr, [&](comment_object &c) {
+                            c.cashout_time = std::max(calculate_discussion_payout_time(c),
+                                    c.created + STEEMIT_CASHOUT_WINDOW_SECONDS);
+                                                      c.children_rshares2 = 0;
+                        });
+                    }
                 }
                     break;
                 default:
@@ -4387,9 +4453,12 @@ namespace steemit {
                                       1, "Hardfork being applied out of order", ("hardfork", hardfork)("hfp.last_hardfork", hfp.last_hardfork));
                 FC_ASSERT(hfp.processed_hardforks.size() ==
                           hardfork, "Hardfork being applied out of order");
-                hfp.processed_hardforks.push_back(_hardfork_times[hardfork]);
-                hfp.last_hardfork = hardfork;
-                hfp.current_hardfork_version = _hardfork_versions[hardfork];
+                hfp.processed_hardforks.
+                        push_back(_hardfork_times[hardfork]);
+                hfp.
+                        last_hardfork = hardfork;
+                hfp.
+                        current_hardfork_version = _hardfork_versions[hardfork];
                 FC_ASSERT(hfp.processed_hardforks[hfp.last_hardfork] ==
                           _hardfork_times[hfp.last_hardfork], "Hardfork processing failed sanity check...");
             });
@@ -4690,5 +4759,6 @@ namespace steemit {
                 }
             }
         }
+
     }
 } //steemit::chain

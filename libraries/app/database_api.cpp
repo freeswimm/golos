@@ -4,7 +4,8 @@
 
 #include <steemit/protocol/get_config.hpp>
 
-#include <steemit/chain/utilities/reward.hpp>
+#include <steemit/chain/evaluators/reward.hpp>
+#include <steemit/chain/evaluators/payout_extension.hpp>
 
 #include <fc/bloom_filter.hpp>
 #include <fc/smart_ref_impl.hpp>
@@ -1069,12 +1070,20 @@ namespace steemit {
                     discussion push_discussion(*itr);
                     push_discussion.active_votes = get_active_votes(author, permlink);
 
-                    result.push_back(discussion(*itr));
+                    result.push_back(push_discussion);
                     set_pending_payout(result.back());
                     ++itr;
                 }
                 return result;
             });
+        }
+
+        asset database_api::get_payout_window_extension_cost_by_time(std::string author, std::string permlink, fc::time_point_sec time) const {
+            return chain::evaluators::comment_payout_extension().cost_by_time(time, my->_db.get_comment(author, permlink));
+        }
+
+        fc::time_point_sec database_api::get_payout_window_extension_time_by_cost(std::string author, std::string permlink, asset cost) const {
+            return chain::evaluators::comment_payout_extension().time_by_cost(cost, my->_db.get_comment(author, permlink));
         }
 
 /**
