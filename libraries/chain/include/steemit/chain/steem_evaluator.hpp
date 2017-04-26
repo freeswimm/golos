@@ -24,7 +24,7 @@ namespace steemit {
         };
 
         class account_create_with_delegation_evaluator
-                : public steemit::chain::evaluator_impl<account_create_with_delegation> {
+                : public steemit::chain::evaluator_impl<account_create_with_delegation_evaluator> {
         public:
             typedef protocol::account_create_with_delegation_operation operation_type;
 
