@@ -65,6 +65,10 @@ namespace steemit {
                 }
             }
 
+            void operator()(const comment_payout_extension_operation &op) {
+                _impacted.insert(op.author);
+            }
+
             void operator()(const delete_comment_operation &op) {
                 _impacted.insert(op.author);
             }
