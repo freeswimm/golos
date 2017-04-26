@@ -26,13 +26,13 @@ namespace steemit {
         class account_create_with_delegation
                 : public steemit::chain::evaluator_impl<account_create_with_delegation> {
         public:
-            typedef protocol::account_create_operation operation_type;
+            typedef protocol::account_create_with_delegation_operation operation_type;
 
             account_create_with_delegation(database &db)
                     : steemit::chain::evaluator_impl<account_create_with_delegation>(db) {
             }
 
-            void do_apply(const protocol::account_create_operation &o);
+            void do_apply(const protocol::account_create_with_delegation_operation &o);
         };
 
         class account_update_evaluator

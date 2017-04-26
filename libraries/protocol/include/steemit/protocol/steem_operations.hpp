@@ -27,7 +27,8 @@ namespace steemit {
             }
         };
 
-        struct account_create_with_delegation_operation
+        class account_create_with_delegation_operation
+        public:
                 : public base_operation {
             asset fee;
             asset delegation;
