@@ -1070,7 +1070,7 @@ namespace steemit {
                     discussion push_discussion(*itr);
                     push_discussion.active_votes = get_active_votes(author, permlink);
 
-                    result.push_back(push_discussion(*itr));
+                    result.push_back(push_discussion);
                     set_pending_payout(result.back());
                     ++itr;
                 }
