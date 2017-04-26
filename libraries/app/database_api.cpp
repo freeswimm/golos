@@ -2356,6 +2356,7 @@ namespace steemit {
                                     case operation::tag<liquidity_reward_operation>::value:
                                     case operation::tag<author_reward_operation>::value:
                                     case operation::tag<curation_reward_operation>::value:
+                                    case operation::tag<curation_reward_operation>::value:
                                     case operation::tag<transfer_to_savings_operation>::value:
                                     case operation::tag<transfer_from_savings_operation>::value:
                                     case operation::tag<cancel_transfer_from_savings_operation>::value:
