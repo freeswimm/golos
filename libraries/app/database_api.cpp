@@ -1096,7 +1096,7 @@ namespace steemit {
             return my->_db.with_read_lock([&]() {
                 std::vector<discussion> result;
 
-#ifndef STEEM_BUILD_LOW_MEMORY
+#ifndef STEEM_BUILD_LOW_MEMORY_NODE
                 FC_ASSERT(limit <= 100);
                 const auto &last_update_idx = my->_db.get_index<comment_index>().indices().get<by_last_update>();
                 auto itr = last_update_idx.begin();
@@ -2029,7 +2029,7 @@ namespace steemit {
         std::vector<discussion> database_api::get_discussions_by_comments(const discussion_query &query) const {
             return my->_db.with_read_lock([&]() {
                 std::vector<discussion> result;
-#ifndef STEEM_BUILD_LOW_MEMORY
+#ifndef STEEM_BUILD_LOW_MEMORY_NODE
                 query.validate();
                 FC_ASSERT(query.start_author, "Must get comments for a specific author");
                 auto start_author = *(query.start_author);
@@ -2201,7 +2201,7 @@ namespace steemit {
             return my->_db.with_read_lock([&]() {
                 try {
                     std::vector<discussion> result;
-#ifndef STEEM_BUILD_LOW_MEMORY
+#ifndef STEEM_BUILD_LOW_MEMORY_NODE
                     FC_ASSERT(limit <= 100);
                     result.reserve(limit);
                     uint32_t count = 0;
@@ -2266,6 +2266,43 @@ namespace steemit {
             });
         }
 
+        vector<vesting_delegation_api_obj> database_api::get_vesting_delegations(string account, string from, uint32_t limit) const {
+            FC_ASSERT(limit <= 1000);
+
+            return my->_db.with_read_lock([&]() {
+                vector<vesting_delegation_api_obj> result;
+                result.reserve(limit);
+
+                const auto &delegation_idx = my->_db.get_index<vesting_delegation_index, by_delegation>();
+                auto itr = delegation_idx.lower_bound(boost::make_tuple(account, from));
+                while (result.size() < limit && itr != delegation_idx.end() &&
+                       itr->delegator == account) {
+                    result.push_back(*itr);
+                    ++itr;
+                }
+
+                return result;
+            });
+        }
+
+        vector<vesting_delegation_expiration_api_obj> database_api::get_expiring_vesting_delegations(string account, time_point_sec from, uint32_t limit) const {
+            FC_ASSERT(limit <= 1000);
+
+            return my->_db.with_read_lock([&]() {
+                vector<vesting_delegation_expiration_api_obj> result;
+                result.reserve(limit);
+
+                const auto &exp_idx = my->_db.get_index<vesting_delegation_expiration_index, by_account_expiration>();
+                auto itr = exp_idx.lower_bound(boost::make_tuple(account, from));
+                while (result.size() < limit && itr != exp_idx.end() &&
+                       itr->delegator == account) {
+                    result.push_back(*itr);
+                    ++itr;
+                }
+
+                return result;
+            });
+        }
 
         state database_api::get_state(std::string path) const {
             return my->_db.with_read_lock([&]() {
@@ -2365,7 +2402,7 @@ namespace steemit {
                             }
                         } else if (part[1] == "posts" ||
                                    part[1] == "comments") {
-#ifndef STEEM_BUILD_LOW_MEMORY
+#ifndef STEEM_BUILD_LOW_MEMORY_NODE
                             int count = 0;
                             const auto &pidx = my->_db.get_index<comment_index>().indices().get<by_author_last_update>();
                             auto itr = pidx.lower_bound(acnt);

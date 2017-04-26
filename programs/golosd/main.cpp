@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     fc::oexception unhandled_exception;
     try {
 
-#ifdef STEEMIT_BUILD_TESTNET
+#ifdef STEEM_BUILD_TESTNET
         std::cerr
                 << "------------------------------------------------------\n\n";
         std::cerr << "            STARTING TEST NETWORK\n\n";
