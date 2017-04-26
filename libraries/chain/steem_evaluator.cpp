@@ -7,7 +7,7 @@
 #include <steemit/chain/evaluators/reward.hpp>
 #include <steemit/chain/evaluators/payout_extension.hpp>
 
-#ifndef STEEM_BUILD_LOW_MEMORY
+#ifndef STEEM_BUILD_LOW_MEMORY_NODE
 
 #include <diff_match_patch.h>
 #include <boost/locale/encoding_utf.hpp>
@@ -175,7 +175,7 @@ namespace steemit {
                 }
 
 
-#ifndef STEEM_BUILD_LOW_MEMORY
+#ifndef STEEM_BUILD_LOW_MEMORY_NODE
                 from_string(acc.json_metadata, o.json_metadata);
 #endif
             });
@@ -256,7 +256,7 @@ namespace steemit {
 
                 acc.last_account_update = _db.head_block_time();
 
-#ifndef STEEM_BUILD_LOW_MEMORY
+#ifndef STEEM_BUILD_LOW_MEMORY_NODE
                 if (o.json_metadata.size() > 0) {
                     from_string(acc.json_metadata, o.json_metadata);
                 }
@@ -317,7 +317,7 @@ namespace steemit {
                         p.children--;
                         p.active = now;
                     });
-#ifndef STEEM_BUILD_LOW_MEMORY
+#ifndef STEEM_BUILD_LOW_MEMORY_NODE
                     if (parent->parent_author != STEEMIT_ROOT_POST_PARENT) {
                         parent = &_db.get_comment(parent->parent_author, parent->parent_permlink);
                     } else
@@ -541,7 +541,7 @@ namespace steemit {
                             com.cashout_windows_amount += 1;
                         }
 
-#ifndef STEEM_BUILD_LOW_MEMORY
+#ifndef STEEM_BUILD_LOW_MEMORY_NODE
                         from_string(com.title, o.title);
                         if (o.body.size() < 1024 * 1024 * 128) {
                             from_string(com.body, o.body);
@@ -578,7 +578,7 @@ namespace steemit {
                             p.children++;
                             p.active = now;
                         });
-#ifndef STEEM_BUILD_LOW_MEMORY
+#ifndef STEEM_BUILD_LOW_MEMORY_NODE
                         if (parent->parent_author != STEEMIT_ROOT_POST_PARENT) {
                             parent = &_db.get_comment(parent->parent_author, parent->parent_permlink);
                         } else
@@ -622,7 +622,7 @@ namespace steemit {
                             FC_ASSERT(equal(com.parent_permlink, o.parent_permlink), "The permlink of a comment cannot change.");
                         }
 
-#ifndef STEEM_BUILD_LOW_MEMORY
+#ifndef STEEM_BUILD_LOW_MEMORY_NODE
                         if (o.title.size()) {
                             from_string(com.title, o.title);
                         }
@@ -2109,7 +2109,7 @@ namespace steemit {
                 s.from = op.from;
                 s.to = op.to;
                 s.amount = op.amount;
-#ifndef STEEM_BUILD_LOW_MEMORY
+#ifndef STEEM_BUILD_LOW_MEMORY_NODE
                 from_string(s.memo, op.memo);
 #endif
                 s.request_id = op.request_id;

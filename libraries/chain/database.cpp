@@ -968,7 +968,7 @@ namespace steemit {
 
         inline const void database::push_virtual_operation(const operation &op, bool force) {
             if (!force) {
-#if defined( STEEM_BUILD_LOW_MEMORY ) && !defined( STEEMIT_BUILD_TESTNET )
+#if defined( STEEM_BUILD_LOW_MEMORY_NODE ) && !defined( STEEMIT_BUILD_TESTNET )
                 return;
 #endif
             }
@@ -1944,7 +1944,7 @@ namespace steemit {
 
                             push_virtual_operation(curation_reward_operation(voter.name, reward, c.author, to_string(c.permlink)));
 
-#ifndef STEEM_BUILD_LOW_MEMORY
+#ifndef STEEM_BUILD_LOW_MEMORY_NODE
                             modify(voter, [&](account_object &a) {
                                 a.curation_rewards += claim;
                             });
@@ -2017,7 +2017,7 @@ namespace steemit {
                         push_virtual_operation(author_reward_operation(comment.author, to_string(comment.permlink), sbd_payout.first, sbd_payout.second, vest_created));
                         push_virtual_operation(comment_reward_operation(comment.author, to_string(comment.permlink), to_sbd(asset(claimed_reward, STEEM_SYMBOL))));
 
-#ifndef STEEM_BUILD_LOW_MEMORY
+#ifndef STEEM_BUILD_LOW_MEMORY_NODE
                         modify(comment, [&](comment_object &c) {
                             c.author_rewards += author_tokens;
                         });
@@ -4680,7 +4680,7 @@ namespace steemit {
             for (auto itr = cidx.begin(); itr != cidx.end(); ++itr) {
                 if (itr->parent_author != STEEMIT_ROOT_POST_PARENT) {
 // Low memory nodes only need immediate child count, full nodes track total children
-#ifdef STEEM_BUILD_LOW_MEMORY
+#ifdef STEEM_BUILD_LOW_MEMORY_NODE
                     modify(get_comment(itr->parent_author, itr->parent_permlink), [&](comment_object &c) {
                         c.children++;
                     });
