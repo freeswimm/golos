@@ -28,8 +28,8 @@ namespace steemit {
         };
 
         class account_create_with_delegation_operation
-        public:
                 : public base_operation {
+        public:
             asset fee;
             asset delegation;
             account_name_type creator;
