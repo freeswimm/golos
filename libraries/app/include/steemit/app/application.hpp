@@ -113,7 +113,7 @@ namespace steemit {
              */
             template<typename Api>
             void register_api_factory(const string &name) {
-#ifndef STEEMIT_BUILD_TESTNET
+#ifndef STEEM_BUILD_TESTNET
                 idump((name));
 #endif
                 register_api_factory(name, [](const api_context &ctx) -> fc::api_ptr {

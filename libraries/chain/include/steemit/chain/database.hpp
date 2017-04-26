@@ -501,7 +501,7 @@ namespace steemit {
 
             void set_flush_interval(uint32_t flush_blocks);
 
-#ifdef STEEMIT_BUILD_TESTNET
+#ifdef STEEM_BUILD_TESTNET
             bool liquidity_rewards_enabled = true;
             bool skip_price_feed_limit_check = true;
             bool skip_transaction_delta_check = true;
@@ -548,6 +548,8 @@ namespace steemit {
             void clear_expired_transactions();
 
             void clear_expired_orders();
+
+            void clear_expired_delegations();
 
             void process_header_extensions(const signed_block &next_block);
 
