@@ -2006,7 +2006,7 @@ namespace steemit {
                             auto benefactor_tokens =
                                     (author_tokens * b.weight) /
                                     STEEMIT_100_PERCENT;
-                            auto vest_created = create_vesting(get_account(b.account), benefactor_tokens, has_hardfork(STEEMIT_HARDFORK_0_17__104));
+                            auto vest_created = create_vesting(get_account(b.account), benefactor_tokens);
                             push_virtual_operation(comment_benefactor_reward_operation(b.account, comment.author, to_string(comment.permlink), vest_created));
                             author_tokens -= benefactor_tokens;
                             total_beneficiary += benefactor_tokens;
