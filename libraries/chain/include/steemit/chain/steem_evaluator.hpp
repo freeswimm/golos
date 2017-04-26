@@ -23,13 +23,13 @@ namespace steemit {
             void do_apply(const protocol::account_create_operation &o);
         };
 
-        class account_create_with_delegation
+        class account_create_with_delegation_evaluator
                 : public steemit::chain::evaluator_impl<account_create_with_delegation> {
         public:
             typedef protocol::account_create_with_delegation_operation operation_type;
 
-            account_create_with_delegation(database &db)
-                    : steemit::chain::evaluator_impl<account_create_with_delegation>(db) {
+            account_create_with_delegation_evaluator(database &db)
+                    : steemit::chain::evaluator_impl<account_create_with_delegation_evaluator>(db) {
             }
 
             void do_apply(const protocol::account_create_with_delegation_operation &o);
