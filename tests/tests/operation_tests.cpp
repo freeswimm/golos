@@ -563,19 +563,19 @@ BOOST_FIXTURE_TEST_SUITE(operation_tests, clean_database_fixture)
             db.modify(mod_sam_comment, [&](comment_object &com) {
                 com.net_rshares = 10;
                 com.abs_rshares = 10;
-                com.children_rshares2 = steemit::chain::util::calculate_vshares(10);
+                com.children_rshares2 = steemit::chain::utilities::calculate_vshares(10);
             });
 
             db.modify(mod_bob_comment, [&](comment_object &com) {
-                com.children_rshares2 = steemit::chain::util::calculate_vshares(10);
+                com.children_rshares2 = steemit::chain::utilities::calculate_vshares(10);
             });
 
             db.modify(mod_alice_comment, [&](comment_object &com) {
-                com.children_rshares2 = steemit::chain::util::calculate_vshares(10);
+                com.children_rshares2 = steemit::chain::utilities::calculate_vshares(10);
             });
 
             db.modify(db.get_dynamic_global_properties(), [&](dynamic_global_property_object &o) {
-                o.total_reward_shares2 = steemit::chain::util::calculate_vshares(10);
+                o.total_reward_shares2 = steemit::chain::utilities::calculate_vshares(10);
             });
 
             tx.signatures.clear();
@@ -6845,16 +6845,16 @@ BOOST_FIXTURE_TEST_SUITE(operation_tests, clean_database_fixture)
 
             generate_block();
 
-            BOOST_REQUIRE(db.get_account("bob").reward_steem_balance ==
+            BOOST_REQUIRE(db.get_account("bob").steem_balance ==
                           ASSET("0.000 TESTS"));
-            BOOST_REQUIRE(db.get_account("bob").reward_sbd_balance ==
+            BOOST_REQUIRE(db.get_account("bob").sbd_balance ==
                           ASSET("0.000 TBD"));
-            BOOST_REQUIRE(db.get_account("bob").reward_vesting_steem.amount ==
+            BOOST_REQUIRE(db.get_account("bob").vesting_steem.amount ==
                           db.get_comment("alice", string("test")).beneficiary_payout_value.amount);
-            BOOST_REQUIRE((db.get_account("alice").reward_sbd_balance.amount +
-                           db.get_account("alice").reward_vesting_steem.amount) /
+            BOOST_REQUIRE((db.get_account("alice").sbd_balance.amount +
+                           db.get_account("alice").vesting_steem.amount) /
                           3 ==
-                          db.get_account("bob").reward_vesting_steem.amount);
+                          db.get_account("bob").vesting_steem.amount);
         }
         FC_LOG_AND_RETHROW()
     }

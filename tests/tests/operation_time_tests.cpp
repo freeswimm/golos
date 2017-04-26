@@ -119,8 +119,6 @@ BOOST_FIXTURE_TEST_SUITE(operation_time_tests, clean_database_fixture)
                 db.push_transaction(tx, 0);
             }
 
-            auto reward_steem = db.get_dynamic_global_properties().total_reward_fund_steem;
-
             // generate a few blocks to seed the reward fund
             generate_blocks(10);
 
