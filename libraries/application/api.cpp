@@ -23,7 +23,7 @@
  */
 #include <cctype>
 
-#include <steemit/app/api.hpp>
+#include <steemit/application/api.hpp>
 #include <steemit/time/time.hpp>
 
 #include <graphene/utilities/key_conversion.hpp>
@@ -34,7 +34,7 @@
 #include <fc/git_revision.hpp>
 
 namespace steemit {
-    namespace app {
+    namespace application {
 
         login_api::login_api(const api_context &ctx)
                 : _ctx(ctx) {
@@ -275,4 +275,4 @@ namespace steemit {
         }
 
     }
-} // steemit::app
+} // steemit::application

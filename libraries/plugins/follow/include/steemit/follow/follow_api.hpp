@@ -1,7 +1,7 @@
 #pragma once
 
-#include <steemit/app/application.hpp>
-#include <steemit/app/steem_api_objects.hpp>
+#include <steemit/application/application.hpp>
+#include <steemit/application/steem_api_objects.hpp>
 
 #include <steemit/follow/follow_objects.hpp>
 
@@ -12,7 +12,6 @@ namespace steemit {
 
         using std::vector;
         using std::string;
-        using app::comment_api_obj;
 
         struct feed_entry {
             string author;
@@ -23,7 +22,7 @@ namespace steemit {
         };
 
         struct comment_feed_entry {
-            comment_api_obj comment;
+            ::steemit::application::comment_api_obj comment;
             vector<account_name_type> reblog_by;
             time_point_sec reblog_on;
             uint32_t entry_id = 0;
@@ -38,7 +37,7 @@ namespace steemit {
         };
 
         struct comment_blog_entry {
-            comment_api_obj comment;
+            ::steemit::application::comment_api_obj comment;
             string blog;
             time_point_sec reblog_on;
             uint32_t entry_id = 0;
@@ -76,7 +75,7 @@ namespace steemit {
 
         class follow_api {
         public:
-            follow_api(const app::api_context &ctx);
+            follow_api(const steemit::application::api_context &ctx);
 
             void on_api_startup();
 

@@ -1,7 +1,7 @@
 #ifndef DATABASE_FIXTURE_HPP
 #define DATABASE_FIXTURE_HPP
 
-#include <steemit/app/application.hpp>
+#include <steemit/application/application.hpp>
 #include <steemit/chain/database.hpp>
 
 #include <fc/io/json.hpp>
@@ -140,7 +140,7 @@ namespace steemit {
         struct database_fixture {
             // the reason we use an app is to exercise the indexes of built-in
             //   plugins
-            steemit::app::application app;
+            steemit::application::application app;
             chain::database &db;
             signed_transaction trx;
             public_key_type committee_key;

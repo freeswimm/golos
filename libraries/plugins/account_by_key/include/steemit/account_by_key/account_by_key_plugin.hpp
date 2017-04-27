@@ -1,6 +1,6 @@
 #pragma once
 
-#include <steemit/app/plugin.hpp>
+#include <steemit/application/plugin.hpp>
 #include <steemit/chain/database.hpp>
 
 #include <steemit/account_by_key/account_by_key_api.hpp>
@@ -12,9 +12,9 @@ namespace steemit {
 
         namespace detail { class account_by_key_plugin_impl; }
 
-        class account_by_key_plugin : public steemit::app::plugin {
+        class account_by_key_plugin : public steemit::application::plugin {
         public:
-            account_by_key_plugin(steemit::app::application *app);
+            account_by_key_plugin(steemit::application::application *app);
 
             std::string plugin_name() const override {
                 return ACCOUNT_BY_KEY_PLUGIN_NAME;

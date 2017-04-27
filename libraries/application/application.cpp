@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-#include <steemit/app/api.hpp>
+#include <steemit/application/api.hpp>
 #include <steemit/time/time.hpp>
 #include <steemit/chain/database_exceptions.hpp>
 
@@ -42,7 +42,7 @@
 #include <boost/range/adaptor/reversed.hpp>
 
 namespace steemit {
-    namespace app {
+    namespace application {
         using graphene::net::item_hash_t;
         using graphene::net::item_id;
         using graphene::net::message;

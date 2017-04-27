@@ -24,7 +24,7 @@
 
 #include <steemit/private_message/private_message_evaluators.hpp>
 
-#include <steemit/app/impacted.hpp>
+#include <steemit/application/impacted.hpp>
 
 #include <steemit/chain/index.hpp>
 #include <steemit/chain/generic_custom_operation_interpreter.hpp>
@@ -99,7 +99,7 @@ namespace steemit {
             }
         }
 
-        private_message_plugin::private_message_plugin(application *app)
+        private_message_plugin::private_message_plugin(application::application *app)
                 : plugin(app),
                   my(new detail::private_message_plugin_impl(*this)) {
         }

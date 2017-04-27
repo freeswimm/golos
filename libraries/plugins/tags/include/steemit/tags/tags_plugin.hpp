@@ -1,6 +1,6 @@
 #pragma once
 
-#include <steemit/app/plugin.hpp>
+#include <steemit/application/plugin.hpp>
 #include <steemit/chain/database.hpp>
 #include <steemit/chain/comment_object.hpp>
 
@@ -14,7 +14,7 @@ namespace steemit {
         using namespace steemit::chain;
         using namespace boost::multi_index;
 
-        using steemit::app::application;
+        using steemit::application::application;
 
         using chainbase::object;
         using chainbase::oid;
@@ -594,7 +594,7 @@ namespace steemit {
  *  This plugin will scan all changes to posts and/or their meta data and
  *
  */
-        class tags_plugin : public steemit::app::plugin {
+        class tags_plugin : public steemit::application::plugin {
         public:
             tags_plugin(application *app);
 
@@ -625,7 +625,7 @@ namespace steemit {
             tag_api() {
             };
 
-            tag_api(const app::api_context &ctx) {
+            tag_api(const steemit::application::api_context &ctx) {
             }//:_app(&ctx.app){}
 
             void on_api_startup() {
@@ -636,7 +636,7 @@ namespace steemit {
             }
 
         private:
-            //app::application* _app = nullptr;
+            //application::application* _app = nullptr;
         };
 
 

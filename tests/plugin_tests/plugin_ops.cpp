@@ -2,7 +2,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <steemit/app/plugin.hpp>
+#include <steemit/application/plugin.hpp>
 #include <steemit/chain/generic_custom_operation_interpreter.hpp>
 #include <steemit/chain/account_object.hpp>
 
@@ -13,7 +13,7 @@ using namespace steemit::chain::test;
 /*
 namespace steemit { namespace plugin_tests {
 
-using namespace steemit::app;
+using namespace steemit::application;
 using namespace steemit::chain;
 
 struct test_a_operation : base_operation

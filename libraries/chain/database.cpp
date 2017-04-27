@@ -3383,7 +3383,6 @@ namespace steemit {
                 for (const flat_set<account_name_type>::value_type &auth : required) {
                     const auto &acnt = get_account(auth);
                     if (!has_hardfork(STEEMIT_HARDFORK_0_17__79)) {
-
                         old_update_account_bandwidth(acnt, trx_size, bandwidth_type::old_forum);
                     }
 
