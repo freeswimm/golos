@@ -1309,7 +1309,10 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                tags::comment_metadata meta;
+                if (c.json_metadata.size()) {
+                    meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                }
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1365,7 +1368,10 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                tags::comment_metadata meta;
+                if (c.json_metadata.size()) {
+                    meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                }
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1426,7 +1432,10 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                tags::comment_metadata meta;
+                if (c.json_metadata.size()) {
+                    meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                }
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1487,7 +1496,10 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                tags::comment_metadata meta;
+                if (c.json_metadata.size()) {
+                    meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                }
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1550,7 +1562,10 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                tags::comment_metadata meta;
+                if (c.json_metadata.size()) {
+                    meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                }
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1606,7 +1621,10 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                tags::comment_metadata meta;
+                if (c.json_metadata.size()) {
+                    meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                }
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1653,8 +1671,7 @@ namespace steemit {
                 query.validate();
                 auto parent = get_parent(query);
 
-                std::function<bool(const comment_api_obj
-                &c)> filter_function = [&](const comment_api_obj &c) -> bool {
+                std::function<bool(const comment_api_obj &c)> filter_function = [&](const comment_api_obj &c) -> bool {
                     if (query.select_authors.size()) {
                         if (query.select_authors.find(c.author) ==
                             query.select_authors.end()) {
@@ -1662,7 +1679,10 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                tags::comment_metadata meta;
+                if (c.json_metadata.size()) {
+                    meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                }
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1712,8 +1732,7 @@ namespace steemit {
                 query.validate();
                 auto parent = get_parent(query);
 
-                std::function<bool(const comment_api_obj
-                &c)> filter_function = [&](const comment_api_obj &c) -> bool {
+                std::function<bool(const comment_api_obj &c)> filter_function = [&](const comment_api_obj &c) -> bool {
                     if (query.select_authors.size()) {
                         if (query.select_authors.find(c.author) ==
                             query.select_authors.end()) {
@@ -1721,7 +1740,10 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                tags::comment_metadata meta;
+                if (c.json_metadata.size()) {
+                    meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                }
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1768,8 +1790,7 @@ namespace steemit {
                 query.validate();
                 auto parent = get_parent(query);
 
-                std::function<bool(const comment_api_obj
-                &c)> filter_function = [&](const comment_api_obj &c) -> bool {
+                std::function<bool(const comment_api_obj &c)> filter_function = [&](const comment_api_obj &c) -> bool {
                     if (query.select_authors.size()) {
                         if (query.select_authors.find(c.author) ==
                             query.select_authors.end()) {
@@ -1777,7 +1798,10 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                tags::comment_metadata meta;
+                if (c.json_metadata.size()) {
+                    meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                }
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1825,8 +1849,7 @@ namespace steemit {
                 query.validate();
                 auto parent = get_parent(query);
 
-                std::function<bool(const comment_api_obj
-                &c)> filter_function = [&](const comment_api_obj &c) -> bool {
+                std::function<bool(const comment_api_obj &c)> filter_function = [&](const comment_api_obj &c) -> bool {
                     if (query.select_authors.size()) {
                         if (query.select_authors.find(c.author) ==
                             query.select_authors.end()) {
@@ -1834,7 +1857,10 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                tags::comment_metadata meta;
+                if (c.json_metadata.size()) {
+                    meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
+                }
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
