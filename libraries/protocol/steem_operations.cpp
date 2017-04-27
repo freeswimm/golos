@@ -186,8 +186,8 @@ namespace steemit {
 
         void vote_operation::validate() const {
             validate_account_name(voter);
-            validate_account_name(author);\
-      FC_ASSERT(abs(weight) <=
+            validate_account_name(author);
+            FC_ASSERT(abs(weight) <=
                 STEEMIT_100_PERCENT, "Weight is not a STEEMIT percentage");
             validate_permlink(permlink);
         }
