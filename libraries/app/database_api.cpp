@@ -1237,7 +1237,6 @@ namespace steemit {
                 const std::function<bool(const comment_api_obj &)> &exit,
                 const std::function<bool(const tags::tag_object &)> &tag_exit,
                 bool ignore_parent) const {
-//   idump((query));
 
             std::multimap<tags::tag_object, discussion, Compare> result;
 
