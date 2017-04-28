@@ -2360,7 +2360,7 @@ cvo.last_update = _db.head_block_time();
                 _db.modify(delegatee, [&](account_object &a) {
                     a.received_vesting_shares += op.vesting_shares;
                 });
-            } else if (op.vesting_shares > delegation->vesting_shares) {
+            } else if (op.vesting_shares >= delegation->vesting_shares) {
                 FC_ASSERT(op.vesting_shares - delegation->vesting_shares >=
                           min_update, "Steem Power increase is not enough of a different. min_update: ${min}", ("min", min_update));
                 FC_ASSERT(available_shares >= op.vesting_shares -
@@ -2379,7 +2379,7 @@ cvo.last_update = _db.head_block_time();
                 _db.modify(*delegation, [&](vesting_delegation_object &obj) {
                     obj.vesting_shares = op.vesting_shares;
                 });
-            } else if (delegation->vesting_shares > op.vesting_shares) {
+            } else {
                 FC_ASSERT(delegation->vesting_shares - op.vesting_shares >=
                           min_delegation || op.vesting_shares.amount ==
                                             0, "Delegation must be removed or leave minimum delegation amount of ${v}", ("v", min_delegation));
@@ -2404,8 +2404,6 @@ cvo.last_update = _db.head_block_time();
                 } else {
                     _db.remove(*delegation);
                 }
-            } else {
-                FC_ASSERT(false, "Delegation must change by at least ${v}", ("v", min_update));
             }
         }
     }
