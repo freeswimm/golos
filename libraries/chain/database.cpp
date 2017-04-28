@@ -2054,10 +2054,9 @@ namespace steemit {
                     c.total_vote_weight = 0;
                     c.max_cashout_time = fc::time_point_sec::maximum();
 
-                    if (has_hardfork(STEEMIT_HARDFORK_0_17__91)) {
-                        c.cashout_time = fc::time_point_sec::maximum();
-                    } else if (c.parent_author == STEEMIT_ROOT_POST_PARENT) {
+                    if (c.parent_author == STEEMIT_ROOT_POST_PARENT) {
                         if (has_hardfork(STEEMIT_HARDFORK_0_12__177) &&
+                            !has_hardfork(STEEMIT_HARDFORK_0_17__91) &&
                             c.last_payout == fc::time_point_sec::min()) {
                             c.cashout_time = head_block_time() +
                                              STEEMIT_SECOND_CASHOUT_WINDOW_SECONDS;
@@ -4233,7 +4232,7 @@ namespace steemit {
                         modify(*itr, [&](comment_object &c) {
                             c.cashout_time = std::max(c.created +
                                                       STEEMIT_CASHOUT_WINDOW_SECONDS, c.cashout_time);
-                                                                        c.children_rshares2 = 0;
+                            c.children_rshares2 = 0;
                         });
                     }
 
@@ -4241,7 +4240,7 @@ namespace steemit {
                         modify(*itr, [&](comment_object &c) {
                             c.cashout_time = std::max(calculate_discussion_payout_time(c),
                                     c.created + STEEMIT_CASHOUT_WINDOW_SECONDS);
-                                                      c.children_rshares2 = 0;
+                            c.children_rshares2 = 0;
                         });
                     }
                 }
