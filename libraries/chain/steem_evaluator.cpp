@@ -213,7 +213,11 @@ namespace steemit {
                     ("creator.balance", creator.balance)
                             ("required", o.fee));
 
-               FC_ASSERT( creator.vesting_shares - creator.delegated_vesting_shares - asset( creator.to_withdraw - creator.withdrawn, VESTS_SYMBOL ) >= o.delegation, "Insufficient vesting shares to delegate to new account.",
+            FC_ASSERT(
+                    creator.vesting_shares - creator.delegated_vesting_shares -
+                    asset(creator.to_withdraw -
+                          creator.withdrawn, VESTS_SYMBOL) >=
+                    o.delegation, "Insufficient vesting shares to delegate to new account.",
                     ("creator.vesting_shares", creator.vesting_shares)
                             ("creator.delegated_vesting_shares", creator.delegated_vesting_shares)("required", o.delegation));
 
@@ -267,7 +271,7 @@ namespace steemit {
 
                 acc.recovery_account = o.creator;
 
-      acc.received_vesting_shares = o.delegation;
+                acc.received_vesting_shares = o.delegation;
 
 #ifndef STEEM_BUILD_LOW_MEMORY_NODE
                 from_string(acc.json_metadata, o.json_metadata);
@@ -2396,7 +2400,7 @@ cvo.last_update = _db.head_block_time();
                     a.received_vesting_shares += op.vesting_shares;
                 });
             } else if (op.vesting_shares >= delegation->vesting_shares) {
-                FC_ASSERT(op.vesting_shares - delegation->vesting_shares >=
+                FC_ASSERT(delta >=
                           min_update, "Steem Power increase is not enough of a different. min_update: ${min}", ("min", min_update));
                 FC_ASSERT(available_shares >= op.vesting_shares -
                                               delegation->vesting_shares, "Account does not have enough vesting shares to delegate.");
@@ -2415,11 +2419,13 @@ cvo.last_update = _db.head_block_time();
                     obj.vesting_shares = op.vesting_shares;
                 });
             } else {
-                FC_ASSERT(delegation->vesting_shares - op.vesting_shares >=
-                          min_delegation || op.vesting_shares.amount ==
-                                            0, "Delegation must be removed or leave minimum delegation amount of ${v}", ("v", min_delegation));
-
                 auto delta = delegation->vesting_shares - op.vesting_shares;
+
+                FC_ASSERT(delta >=
+                          min_update, "Steem Power increase is not enough of a different. min_update: ${min}", ("min", min_update));
+                FC_ASSERT(op.vesting_shares >= min_delegation ||
+                          op.vesting_shares.amount ==
+                          0, "Delegation must be removed or leave minimum delegation amount of ${v}", ("v", min_delegation));
 
                 _db.create<vesting_delegation_expiration_object>([&](vesting_delegation_expiration_object &obj) {
                     obj.delegator = op.delegator;
