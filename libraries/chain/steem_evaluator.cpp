@@ -2400,12 +2400,12 @@ cvo.last_update = _db.head_block_time();
                     a.received_vesting_shares += op.vesting_shares;
                 });
             } else if (op.vesting_shares >= delegation->vesting_shares) {
+                auto delta = op.vesting_shares - delegation->vesting_shares;
+
                 FC_ASSERT(delta >=
                           min_update, "Steem Power increase is not enough of a different. min_update: ${min}", ("min", min_update));
                 FC_ASSERT(available_shares >= op.vesting_shares -
                                               delegation->vesting_shares, "Account does not have enough vesting shares to delegate.");
-
-                auto delta = op.vesting_shares - delegation->vesting_shares;
 
                 _db.modify(delegator, [&](account_object &a) {
                     a.delegated_vesting_shares += delta;
