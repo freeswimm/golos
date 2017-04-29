@@ -2214,8 +2214,8 @@ namespace steemit {
                         // recent rshares 2 to prevent any downtime in payouts at HF 17. After HF 17, we can capture
                         // the value of recent rshare 2 and set it at the hardfork instead of computing it every reindex
                         if (funds.size() && comment.net_rshares > 0) {
-                            const auto &rf = get_reward_fund(*current);
-                            funds[rf.id._id].recent_rshares2 += utilities::calculate_vshares(current->net_rshares.value, rf);
+                            const auto &rf = get_reward_fund(comment);
+                            funds[rf.id._id].recent_rshares2 += utilities::calculate_vshares(comment.net_rshares.value, rf);
                         }
                         auto reward = cashout_comment_helper(ctx, comment);
 
