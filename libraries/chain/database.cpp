@@ -2012,7 +2012,7 @@ namespace steemit {
                             total_beneficiary += benefactor_tokens;
                         }
 
-                        author_tokens -= benefactor_tokens;
+                        author_tokens -= total_beneficiary;
 
                         auto sbd_steem = (author_tokens *
                                           comment.percent_steem_dollars) /
