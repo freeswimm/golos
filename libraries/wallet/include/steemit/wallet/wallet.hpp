@@ -432,10 +432,10 @@ namespace steemit {
              * @param broadcast true if you wish to broadcast the transaction
              */
             annotated_signed_transaction create_account_with_keys_delegated(string creator,
-                    string newname,
-                    string json_meta,
                     asset steem_fee,
                     asset delegated_vests,
+                    string newname,
+                    string json_meta,
                     public_key_type owner,
                     public_key_type active,
                     public_key_type posting,

@@ -1390,7 +1390,6 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
                 asset delegated_vests,
                 string new_account_name,
                 string json_meta,
-
                 public_key_type owner,
                 public_key_type active,
                 public_key_type posting,
