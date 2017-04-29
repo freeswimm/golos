@@ -115,19 +115,11 @@ namespace steemit {
             // Subscriptions //
             ///////////////////
 
-            void set_subscribe_callback(std::function<void( const variant &
+            void set_subscribe_callback(std::function<void(const variant &)> cb, bool clear_filter);
 
-            )> cb,
-            bool clear_filter
-            );
+            void set_pending_transaction_callback(std::function<void(const variant &)> cb);
 
-            void set_pending_transaction_callback(std::function<void( const variant &
-
-            )> cb);
-
-            void set_block_applied_callback(std::function<void( const variant &
-
-            block_header)> cb);
+            void set_block_applied_callback(std::function<void(const variant &block_header)> cb);
 
             /**
              * @brief Stop receiving any notifications
@@ -426,13 +418,6 @@ namespace steemit {
             std::vector<discussion> get_discussions_by_trending(const discussion_query &query) const;
 
             /**
-             * Used to retrieve the list of second payout discussions sorted by rshares^2 amount
-             * @param query @ref discussion_query
-             * @return vector of second payout mode discussions sorted by rshares^2 amount
-             **/
-            std::vector<discussion> get_discussions_by_trending30(const discussion_query &query) const;
-
-            /**
              * Used to retrieve the list of discussions sorted by created time
              * @param query @ref discussion_query
              * @return vector of discussions sorted by created time
@@ -593,7 +578,6 @@ FC_API(steemit::app::database_api,
                 (get_trending_tags)
                 (get_tags_used_by_author)
                 (get_discussions_by_trending)
-                (get_discussions_by_trending30)
                 (get_discussions_by_created)
                 (get_discussions_by_active)
                 (get_discussions_by_cashout)
