@@ -2167,8 +2167,9 @@ namespace steemit {
 
                         FC_ASSERT(funds[rf.id._id].recent_rshares2 <
                                   std::numeric_limits<uint64_t>::max());
-                        ++current;
                     }
+
+                    ++current;
                 }
 
                 current = cidx.begin();
