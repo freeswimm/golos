@@ -16,7 +16,8 @@ namespace steemit {
         using steemit::protocol::price;
         using steemit::protocol::asset_symbol_type;
 
-        typedef fc::fixed_string<> reward_fund_name_type;
+        typedef fc::fixed_string<>
+                reward_fund_name_type;
 
         /**
          *  This object is used to track pending requests to convert sbd to steem
@@ -253,6 +254,9 @@ namespace steemit {
         class reward_fund_object
                 : public object<reward_fund_object_type, reward_fund_object> {
         public:
+            reward_fund_object() {
+            }
+
             template<typename Constructor, typename Allocator>
             reward_fund_object(Constructor &&c, allocator <Allocator> a) {
                 c(*this);
