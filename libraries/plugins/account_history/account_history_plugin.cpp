@@ -222,7 +222,7 @@ namespace steemit {
             database().pre_apply_operation.connect([&](const operation_notification &note) { my->on_operation(note); });
 
             typedef pair<string, string> pairstring;
-            LOAD_VALUE_SET(options, "track-account-range", my->_tracked_accounts, pairstring);
+            STEEMIT_LOAD_VALUE_SET(options, "track-account-range", my->_tracked_accounts, pairstring);
             if (options.count("filter-posting-ops")) {
                 my->_filter_content = true;
             }

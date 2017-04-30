@@ -4,7 +4,6 @@
 
 namespace steemit {
     namespace chain {
-
         struct account_keys {
             authority owner_key;
             authority active_key;

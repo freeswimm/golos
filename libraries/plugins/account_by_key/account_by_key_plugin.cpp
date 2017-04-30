@@ -6,17 +6,16 @@
 
 namespace steemit {
     namespace account_by_key {
-
         namespace detail {
 
             class account_by_key_plugin_impl {
             public:
-                account_by_key_plugin_impl(account_by_key_plugin &_plugin)
-                        : _self(_plugin) {
+                account_by_key_plugin_impl(account_by_key_plugin &plugin)
+                        : self(plugin) {
                 }
 
                 steemit::chain::database &database() {
-                    return _self.database();
+                    return self.database();
                 }
 
                 void pre_operation(const operation_notification &op_obj);
@@ -30,7 +29,7 @@ namespace steemit {
                 void update_key_lookup(const account_authority_object &a);
 
                 flat_set<public_key_type> cached_keys;
-                account_by_key_plugin &_self;
+                account_by_key_plugin &self;
             };
 
             struct pre_operation_visitor {
@@ -217,11 +216,11 @@ namespace steemit {
             }
 
             void account_by_key_plugin_impl::pre_operation(const operation_notification &note) {
-                note.op.visit(pre_operation_visitor(_self));
+                note.op.visit(pre_operation_visitor(self));
             }
 
             void account_by_key_plugin_impl::post_operation(const operation_notification &note) {
-                note.op.visit(post_operation_visitor(_self));
+                note.op.visit(post_operation_visitor(self));
             }
 
         } // detail
@@ -233,8 +232,7 @@ namespace steemit {
 
         void account_by_key_plugin::plugin_set_program_options(
                 boost::program_options::options_description &cli,
-                boost::program_options::options_description &cfg
-        ) {
+                boost::program_options::options_description &cfg) {
         }
 
         void account_by_key_plugin::plugin_initialize(const boost::program_options::variables_map &options) {

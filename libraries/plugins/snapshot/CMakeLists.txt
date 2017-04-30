@@ -2,6 +2,7 @@ set(CURRENT_TARGET snapshot)
 
 list(APPEND CURRENT_TARGET_HEADERS
         include/steemit/snapshot/snapshot_plugin.hpp
+        include/steemit/snapshot/snapshot_state.hpp
         )
 
 list(APPEND CURRENT_TARGET_SOURCES

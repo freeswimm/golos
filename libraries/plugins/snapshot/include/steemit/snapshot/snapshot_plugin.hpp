@@ -7,9 +7,15 @@
 #include <sstream>
 #include <string>
 
+#define SNAPSHOT_PLUGIN_NAME "snapshot"
+
 namespace steemit {
     namespace plugin {
         namespace snapshot {
+            namespace detail {
+                class snapshot_plugin_impl;
+            }
+
             class snapshot_plugin : public steemit::application::plugin {
             public:
                 /**
@@ -33,40 +39,30 @@ namespace steemit {
                  */
                 virtual void plugin_initialize(const boost::program_options::variables_map &options) override;
 
+                virtual void plugin_set_program_options(
+                        boost::program_options::options_description &command_line_options,
+                        boost::program_options::options_description &config_file_options) override;
+
                 /**
                  * Called when the plugin is enabled.
                  */
                 virtual void plugin_startup() override;
 
-                std::string get_message();
+                const unordered_map<string, std::string> &get_loaded_snapshots() const;
 
             private:
+                boost::program_options::variables_map options;
+
+                std::unordered_map<std::string, std::string> loaded_snapshots;
+
+                friend class detail::snapshot_plugin_impl;
+
+                std::unique_ptr<detail::snapshot_plugin_impl> my;
+
                 steemit::application::application *_app;
-                std::string _message;
-                uint32_t _plugin_call_count = 0;
-            };
-
-            class snapshot_api {
-            public:
-                snapshot_api(const steemit::application::api_context &ctx);
-
-                /**
-                 * Called immediately after the constructor.  If the API class uses enable_shared_from_this,
-                 * shared_from_this() is available in this method, which allows signal handlers to be registered
-                 * with application::connect_signal()
-                 */
-                void on_api_startup();
-
-                std::string get_message();
-
-            private:
-                steemit::application::application &_app;
-                uint32_t _api_call_count = 0;
             };
         }
     }
 }
-
-FC_API(steemit::plugin::snapshot::snapshot_api, (get_message))
 
 #endif //GOLOS_SNAPSHOT_PLUGIN_HPP

@@ -128,7 +128,7 @@ namespace steemit {
             app().register_api_factory<private_message_api>("private_message_api");
 
             typedef pair<string, string> pairstring;
-            LOAD_VALUE_SET(options, "pm-accounts", my->_tracked_accounts, pairstring);
+            STEEMIT_LOAD_VALUE_SET(options, "pm-accounts", my->_tracked_accounts, pairstring);
         }
 
         vector<message_api_obj> private_message_api::get_inbox(string to, time_point newest, uint16_t limit) const {

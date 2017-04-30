@@ -144,7 +144,7 @@ namespace steemit {
         }
 
 #define DEFAULT_VALUE_VECTOR(value) default_value({fc::json::to_string(value)}, fc::json::to_string(value))
-#define LOAD_VALUE_SET(options, name, container, type) \
+#define STEEMIT_LOAD_VALUE_SET(options, name, container, type) \
 if( options.count(name) ) { \
       const std::vector<std::string>& ops = options[name].as<std::vector<std::string>>(); \
       std::transform(ops.begin(), ops.end(), std::inserter(container, container.end()), &steemit::application::dejsonify<type>); \
@@ -160,7 +160,7 @@ if( options.count(name) ) { \
    { return std::make_shared< plugin_class >( application ); } \
    } }
 
-#define DEFINE_PLUGIN_EVALUATOR(PLUGIN, OPERATION, X)                     \
+#define STEEMIT_DEFINE_PLUGIN_EVALUATOR(PLUGIN, OPERATION, X)                     \
 class X ## _evaluator : public steemit::chain::evaluator_impl< X ## _evaluator, OPERATION > \
 {                                                                           \
    public:                                                                  \
