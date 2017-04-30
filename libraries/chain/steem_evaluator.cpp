@@ -213,9 +213,11 @@ namespace steemit {
                     ("creator.balance", creator.balance)
                             ("required", o.fee));
 
-            FC_ASSERT(creator.vesting_shares -
-                      creator.delegated_vesting_shares >=
-                      o.delegation, "Insufficient vesting shares to delegate to new account.",
+            FC_ASSERT(
+                    creator.vesting_shares - creator.delegated_vesting_shares -
+                    asset(creator.to_withdraw -
+                          creator.withdrawn, VESTS_SYMBOL) >=
+                    o.delegation, "Insufficient vesting shares to delegate to new account.",
                     ("creator.vesting_shares", creator.vesting_shares)
                             ("creator.delegated_vesting_shares", creator.delegated_vesting_shares)("required", o.delegation));
 
@@ -269,7 +271,7 @@ namespace steemit {
 
                 acc.recovery_account = o.creator;
 
-                acc.received_vesting_shares += o.delegation;
+                acc.received_vesting_shares = o.delegation;
 
 #ifndef STEEM_BUILD_LOW_MEMORY_NODE
                 from_string(acc.json_metadata, o.json_metadata);
@@ -2397,12 +2399,13 @@ cvo.last_update = _db.head_block_time();
                 _db.modify(delegatee, [&](account_object &a) {
                     a.received_vesting_shares += op.vesting_shares;
                 });
-            } else if (op.vesting_shares - delegation->vesting_shares >=
-                       min_update) {
+            } else if (op.vesting_shares >= delegation->vesting_shares) {
+                auto delta = op.vesting_shares - delegation->vesting_shares;
+
+                FC_ASSERT(delta >=
+                          min_update, "Steem Power increase is not enough of a different. min_update: ${min}", ("min", min_update));
                 FC_ASSERT(available_shares >= op.vesting_shares -
                                               delegation->vesting_shares, "Account does not have enough vesting shares to delegate.");
-
-                auto delta = op.vesting_shares - delegation->vesting_shares;
 
                 _db.modify(delegator, [&](account_object &a) {
                     a.delegated_vesting_shares += delta;
@@ -2415,23 +2418,20 @@ cvo.last_update = _db.head_block_time();
                 _db.modify(*delegation, [&](vesting_delegation_object &obj) {
                     obj.vesting_shares = op.vesting_shares;
                 });
-            } else if (delegation->vesting_shares - op.vesting_shares >=
-                       min_update ||
-                       delegation->vesting_shares == op.vesting_shares) {
-                FC_ASSERT(delegation->min_delegation_time <=
-                          _db.head_block_time(), "Delegation cannot be removed yet.");
-                if (delegation->vesting_shares != op.vesting_shares)
-                    FC_ASSERT(delegation->vesting_shares -
-                              op.vesting_shares >=
-                              min_delegation, "Delegation must be removed or leave minimum delegation amount of ${v}", ("v", min_delegation));
-
+            } else {
                 auto delta = delegation->vesting_shares - op.vesting_shares;
+
+                FC_ASSERT(delta >=
+                          min_update, "Steem Power increase is not enough of a different. min_update: ${min}", ("min", min_update));
+                FC_ASSERT(op.vesting_shares >= min_delegation ||
+                          op.vesting_shares.amount ==
+                          0, "Delegation must be removed or leave minimum delegation amount of ${v}", ("v", min_delegation));
 
                 _db.create<vesting_delegation_expiration_object>([&](vesting_delegation_expiration_object &obj) {
                     obj.delegator = op.delegator;
                     obj.vesting_shares = delta;
-                    obj.expiration = _db.head_block_time() +
-                                     STEEMIT_CASHOUT_WINDOW_SECONDS; // TODO: Replace with config constant with payout change branch
+                    obj.expiration = std::max(_db.head_block_time() +
+                                              STEEMIT_CASHOUT_WINDOW_SECONDS, delegation->min_delegation_time);
                 });
 
                 _db.modify(delegatee, [&](account_object &a) {
@@ -2445,8 +2445,6 @@ cvo.last_update = _db.head_block_time();
                 } else {
                     _db.remove(*delegation);
                 }
-            } else {
-                FC_ASSERT(false, "Delegation must change by at least ${v}", ("v", min_update));
             }
         }
     }

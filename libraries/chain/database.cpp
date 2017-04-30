@@ -440,7 +440,8 @@ namespace steemit {
         }
 
         const time_point_sec database::calculate_discussion_payout_time(const comment_object &comment) const {
-            if (comment.parent_author == STEEMIT_ROOT_POST_PARENT) {
+            if (has_hardfork(STEEMIT_HARDFORK_0_17__91) ||
+                comment.parent_author == STEEMIT_ROOT_POST_PARENT) {
                 return comment.cashout_time;
             } else {
                 return get<comment_object>(comment.root_comment).cashout_time;
@@ -2004,9 +2005,10 @@ namespace steemit {
                                     STEEMIT_100_PERCENT;
                             auto vest_created = create_vesting(get_account(b.account), benefactor_tokens);
                             push_virtual_operation(comment_benefactor_reward_operation(b.account, comment.author, to_string(comment.permlink), vest_created));
-                            author_tokens -= benefactor_tokens;
                             total_beneficiary += benefactor_tokens;
                         }
+
+                        author_tokens -= total_beneficiary;
 
                         auto sbd_steem = (author_tokens *
                                           comment.percent_steem_dollars) /
@@ -2164,8 +2166,9 @@ namespace steemit {
 
                         FC_ASSERT(funds[rf.id._id].recent_rshares2 <
                                   std::numeric_limits<uint64_t>::max());
-                        ++current;
                     }
+
+                    ++current;
                 }
 
                 current = cidx.begin();
@@ -2206,9 +2209,9 @@ namespace steemit {
                         // This extra logic is for when the funds are created in HF 16. We are using this data to preload
                         // recent rshares 2 to prevent any downtime in payouts at HF 17. After HF 17, we can capture
                         // the value of recent rshare 2 and set it at the hardfork instead of computing it every reindex
-                        if (funds.size()) {
-                            const auto &rf = get_reward_fund(*current);
-                            funds[rf.id._id].recent_rshares2 += utilities::calculate_vshares(current->net_rshares.value, rf);
+                        if (funds.size() && comment.net_rshares > 0) {
+                            const auto &rf = get_reward_fund(comment);
+                            funds[rf.id._id].recent_rshares2 += utilities::calculate_vshares(comment.net_rshares.value, rf);
                         }
                         auto reward = cashout_comment_helper(ctx, comment);
 
@@ -4380,8 +4383,7 @@ namespace steemit {
                         g.total_reward_shares2 = 0;
                     });
 
-                    /*
-                    * For all current comments we will either keep their current cashout time, or extend it to 1 week
+                    /* For all current comments we will either keep their current cashout time, or extend it to 1 week
                     * after creation.
                     *
                     * We cannot do a simple iteration by cashout time because we are editting cashout time.
@@ -4403,7 +4405,6 @@ namespace steemit {
                     for (auto itr = comment_idx.begin();
                          itr != comment_idx.end() && itr->cashout_time <
                                                      fc::time_point_sec::maximum(); ++itr) {
-
                         root_posts.push_back(&(*itr));
 
                         for (auto reply_itr = by_root_idx.lower_bound(itr->id);
@@ -4417,7 +4418,6 @@ namespace steemit {
                         modify(*itr, [&](comment_object &c) {
                             c.cashout_time = std::max(c.created +
                                                       STEEMIT_CASHOUT_WINDOW_SECONDS, c.cashout_time);
-                            c.children_rshares2 = 0;
                         });
                     }
 
@@ -4425,7 +4425,6 @@ namespace steemit {
                         modify(*itr, [&](comment_object &c) {
                             c.cashout_time = std::max(calculate_discussion_payout_time(c),
                                     c.created + STEEMIT_CASHOUT_WINDOW_SECONDS);
-                            c.children_rshares2 = 0;
                         });
                     }
                 }
