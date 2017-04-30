@@ -184,12 +184,6 @@ namespace steemit {
             fc::variant_object get_config() const;
 
             /**
-             * @brief Return a JSON description of object representations
-             * @return JSON description of object representations in a string
-             */
-            std::string get_schema() const;
-
-            /**
              * @brief Retrieve the current @ref dynamic_global_property_object
              */
             dynamic_global_property_api_obj get_dynamic_global_properties() const;

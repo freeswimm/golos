@@ -57,9 +57,9 @@ namespace steemit {
 
                 friend class detail::snapshot_plugin_impl;
 
-                std::unique_ptr<detail::snapshot_plugin_impl> my;
+                std::unique_ptr<detail::snapshot_plugin_impl> impl;
 
-                steemit::application::application *_app;
+                steemit::application::application *application;
             };
         }
     }
