@@ -6,7 +6,7 @@
 #define STEEMIT_BLOCKCHAIN_VERSION              (version(0, 17, 0))
 #define STEEMIT_BLOCKCHAIN_HARDFORK_VERSION     (hardfork_version(STEEMIT_BLOCKCHAIN_VERSION))
 
-#ifdef STEEM_BUILD_TESTNET
+#ifdef STEEMIT_BUILD_TESTNET
 #define BLOCKCHAIN_NAME "GOLOSTEST"
 
 #define STEEMIT_SYMBOL                          "GOLOS"

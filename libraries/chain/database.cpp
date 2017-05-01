@@ -965,7 +965,7 @@ namespace steemit {
 
         inline const void database::push_virtual_operation(const operation &op, bool force) {
             if (!force) {
-#if defined( STEEM_BUILD_LOW_MEMORY_NODE ) && !defined( STEEM_BUILD_TESTNET )
+#if defined( STEEM_BUILD_LOW_MEMORY_NODE ) && !defined( STEEMIT_BUILD_TESTNET )
                 return;
 #endif
             }
@@ -2442,7 +2442,7 @@ namespace steemit {
         asset database::get_pow_reward() const {
             const auto &props = get_dynamic_global_properties();
 
-#ifndef STEEM_BUILD_TESTNET
+#ifndef STEEMIT_BUILD_TESTNET
             /// 0 block rewards until at least STEEMIT_MAX_WITNESSES have produced a POW
             if (props.num_pow_witnesses < STEEMIT_MAX_WITNESSES &&
                 props.head_block_number < STEEMIT_START_VESTING_BLOCK) {
@@ -2465,7 +2465,7 @@ namespace steemit {
 
 
         void database::pay_liquidity_reward() {
-#ifdef STEEM_BUILD_TESTNET
+#ifdef STEEMIT_BUILD_TESTNET
             if (!liquidity_rewards_enabled) {
                 return;
             }
@@ -3267,7 +3267,7 @@ namespace steemit {
                             fho.current_median_history = copy[copy.size() /
                                                               2];
 
-#ifdef STEEM_BUILD_TESTNET
+#ifdef STEEMIT_BUILD_TESTNET
                             if (skip_price_feed_limit_check) {
                                 return;
                             }
@@ -4213,18 +4213,17 @@ namespace steemit {
             switch (hardfork) {
                 case STEEMIT_HARDFORK_0_1:
                     perform_vesting_share_split(10000);
-#ifdef STEEM_BUILD_TESTNET
-                {
-                    custom_operation test_op;
-                    string op_msg = "Testnet: Hardfork applied";
-                    test_op.data = vector<char>(op_msg.begin(), op_msg.end());
-                    test_op.required_auths.insert(STEEMIT_INIT_MINER_NAME);
-                    operation op = test_op;   // we need the operation object to live to the end of this scope
-                    operation_notification note(op);
-                    notify_pre_apply_operation(note);
-                    notify_post_apply_operation(note);
-                }
-                break;
+#ifdef STEEMIT_BUILD_TESTNET
+                    {
+                        custom_operation test_op;
+                        string op_msg = "Testnet: Hardfork applied";
+                        test_op.data = vector<char>(op_msg.begin(), op_msg.end());
+                        test_op.required_auths.insert(STEEMIT_INIT_MINER_NAME);
+                        operation op = test_op;   // we need the operation object to live to the end of this scope
+                        operation_notification note(op);
+                        notify_pre_apply_operation(note);
+                        notify_post_apply_operation(note);
+                    }
 #endif
                     break;
                 case STEEMIT_HARDFORK_0_2:
