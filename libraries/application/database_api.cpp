@@ -1,6 +1,6 @@
-#include <steemit/app/api_context.hpp>
-#include <steemit/app/application.hpp>
-#include <steemit/app/database_api.hpp>
+#include <steemit/application/api_context.hpp>
+#include <steemit/application/application.hpp>
+#include <steemit/application/database_api.hpp>
 
 #include <steemit/protocol/get_config.hpp>
 
@@ -18,13 +18,13 @@
 #define GET_REQUIRED_FEES_MAX_RECURSION 4
 
 namespace steemit {
-    namespace app {
+    namespace application {
         class database_api_impl;
 
         class database_api_impl
                 : public std::enable_shared_from_this<database_api_impl> {
         public:
-            database_api_impl(const steemit::app::api_context &ctx);
+            database_api_impl(const steemit::application::api_context &ctx);
 
             ~database_api_impl();
 
@@ -190,14 +190,14 @@ namespace steemit {
 //                                                                  //
 //////////////////////////////////////////////////////////////////////
 
-        database_api::database_api(const steemit::app::api_context &ctx)
+        database_api::database_api(const steemit::application::api_context &ctx)
                 : my(new database_api_impl(ctx)) {
         }
 
         database_api::~database_api() {
         }
 
-        database_api_impl::database_api_impl(const steemit::app::api_context &ctx)
+        database_api_impl::database_api_impl(const steemit::application::api_context &ctx)
                 : _db(*ctx.app.chain_database()) {
             wlog("creating database api ${x}", ("x", int64_t(this)));
 
@@ -206,7 +206,15 @@ namespace steemit {
                 _follow_api = std::make_shared<steemit::follow::follow_api>(ctx);
             }
             catch (fc::assert_exception) {
-                ilog("Follow Plugin not loaded");
+                ilog("Follow plugin not loaded");
+            }
+
+            try {
+                FC_ASSERT(
+                        ctx.app.get_plugin<steemit::plugin::snapshot::snapshot_plugin>(SNAPSHOT_PLUGIN_NAME)->get_loaded_snapshots().at("snapshot5392323.json") ==
+                        "75b7287ca7d39fcfb742ba184f6e2f6debb49cf70f0c7e3dcfffe45b518ee64c", "Steemit accounts snapsnot is invalid");
+            } catch (fc::assert_exception) {
+                ilog("Snapshots plugin not loaded");
             }
         }
 
@@ -1246,21 +1254,29 @@ namespace steemit {
                 const std::function<bool(const comment_api_obj &)> &exit,
                 const std::function<bool(const tags::tag_object &)> &tag_exit,
                 bool ignore_parent) const {
+//   idump((query));
 
             std::multimap<tags::tag_object, discussion, Compare> result;
 
             const auto &cidx = my->_db.get_index<tags::tag_index>().indices().get<tags::by_comment>();
             comment_id_type start;
 
-            if (query.start_author && query.start_permlink) {
+            if (query.
+                    start_author && query
+                        .start_permlink) {
                 start = my->_db.get_comment(*query.start_author, *query.start_permlink).id;
                 auto itr = cidx.find(start);
-                while (itr != cidx.end() && itr->comment == start) {
+                while (itr != cidx.
+
+                        end() &&
+
+                       itr->comment == start) {
                     if (itr->tag == tag) {
                         tidx_itr = tidx.iterator_to(*itr);
                         break;
                     }
-                    ++itr;
+                    ++
+                            itr;
                 }
             }
 
@@ -1282,7 +1298,9 @@ namespace steemit {
                     } else if (exit(insert_discussion) || tag_exit(*tidx_itr)) {
                         break;
                     } else {
-                        result.insert({*tidx_itr, insert_discussion});
+                        result.insert({
+                                *tidx_itr, insert_discussion
+                        });
                         --count;
                     }
                 } catch (const fc::exception &e) {
@@ -1292,6 +1310,7 @@ namespace steemit {
 
                 ++tidx_itr;
             }
+
             return result;
         }
 
@@ -1318,10 +1337,7 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta;
-                    if (c.json_metadata.size()) {
-                        meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
-                    }
+                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1377,10 +1393,7 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta;
-                    if (c.json_metadata.size()) {
-                        meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
-                    }
+                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1441,10 +1454,7 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta;
-                    if (c.json_metadata.size()) {
-                        meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
-                    }
+                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1501,10 +1511,7 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta;
-                    if (c.json_metadata.size()) {
-                        meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
-                    }
+                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1551,8 +1558,7 @@ namespace steemit {
                 query.validate();
                 auto parent = get_parent(query);
 
-                std::function<bool(const comment_api_obj
-                &c)> filter_function = [&](const comment_api_obj &c) -> bool {
+                std::function<bool(const comment_api_obj &c)> filter_function = [&](const comment_api_obj &c) -> bool {
                     if (query.select_authors.size()) {
                         if (query.select_authors.find(c.author) ==
                             query.select_authors.end()) {
@@ -1560,10 +1566,7 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta;
-                    if (c.json_metadata.size()) {
-                        meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
-                    }
+                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1618,10 +1621,7 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta;
-                    if (c.json_metadata.size()) {
-                        meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
-                    }
+                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1679,10 +1679,7 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta;
-                    if (c.json_metadata.size()) {
-                        meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
-                    }
+                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1737,10 +1734,7 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta;
-                    if (c.json_metadata.size()) {
-                        meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
-                    }
+                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -1796,10 +1790,7 @@ namespace steemit {
                         }
                     }
 
-                    tags::comment_metadata meta;
-                    if (c.json_metadata.size()) {
-                        meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
-                    }
+                    tags::comment_metadata meta = fc::json::from_string(c.json_metadata).as<tags::comment_metadata>();
 
                     for (const std::set<std::string>::value_type &iterator : query.filter_tags) {
                         if (meta.tags.find(iterator) != meta.tags.end()) {
@@ -2680,5 +2671,6 @@ namespace steemit {
                 FC_ASSERT(false, "Unknown Transaction ${t}", ("t", id));
             });
         }
+
     }
-} // steemit::app
+} // steemit::application

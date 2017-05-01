@@ -34,7 +34,6 @@ namespace steemit {
 
         typedef key_lookup_object::id_type key_lookup_id_type;
 
-
         using namespace boost::multi_index;
 
         struct by_key;

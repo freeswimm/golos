@@ -40,7 +40,7 @@
 #include <graphene/utilities/key_conversion.hpp>
 #include <graphene/utilities/words.hpp>
 
-#include <steemit/app/api.hpp>
+#include <steemit/application/api.hpp>
 #include <steemit/follow/follow_operations.hpp>
 #include <steemit/private_message/private_message_operations.hpp>
 #include <steemit/wallet/wallet.hpp>
@@ -2174,7 +2174,7 @@ fc::ecc::private_key wallet_api::derive_private_key(const std::string& prefix_st
             return result;
         }
 
-        app::state wallet_api::get_state(string url) {
+        application::state wallet_api::get_state(string url) {
             return my->_remote_db->get_state(url);
         }
 

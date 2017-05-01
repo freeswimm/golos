@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-#include <steemit/app/api.hpp>
+#include <steemit/application/api.hpp>
 #include <steemit/time/time.hpp>
 #include <steemit/chain/database_exceptions.hpp>
 
@@ -32,17 +32,19 @@
 #include <fc/io/fstream.hpp>
 #include <fc/network/resolve.hpp>
 
-#include <boost/algorithm/string.hpp>
 #include <boost/signals2.hpp>
+#include <boost/program_options.hpp>
+
+#include <boost/algorithm/string.hpp>
 #include <boost/range/algorithm/reverse.hpp>
+#include <boost/range/adaptor/reversed.hpp>
+#include <boost/program_options/variables_map.hpp>
 
 #include <fc/log/file_appender.hpp>
 #include <fc/log/logger_config.hpp>
 
-#include <boost/range/adaptor/reversed.hpp>
-
 namespace steemit {
-    namespace app {
+    namespace application {
         using graphene::net::item_hash_t;
         using graphene::net::item_id;
         using graphene::net::message;
@@ -55,8 +57,6 @@ namespace steemit {
         using protocol::block_id_type;
 
         using std::vector;
-
-        namespace bpo = boost::program_options;
 
         api_context::api_context(application &_app, const std::string &_api_name, std::weak_ptr<api_session_data> _session)
                 : app(_app), api_name(_api_name), session(_session) {
@@ -270,17 +270,14 @@ namespace steemit {
                             } else {
                                 try {
                                     _chain_db->open(_data_dir /
-                                                    "blockchain", _shared_dir, STEEMIT_INIT_SUPPLY, _shared_file_size, chainbase::database::read_write);\
-
-                                }
-                                catch (fc::assert_exception &) {
+                                                    "blockchain", _shared_dir, STEEMIT_INIT_SUPPLY, _shared_file_size, chainbase::database::read_write);
+                                } catch (fc::assert_exception &) {
                                     wlog("Error when opening database. Attempting reindex...");
 
                                     try {
                                         _chain_db->reindex(_data_dir /
                                                            "blockchain", _shared_dir, _shared_file_size);
-                                    }
-                                    catch (chain::block_log_exception &) {
+                                    } catch (chain::block_log_exception &) {
                                         wlog("Error opening block log. Having to resync from network...");
                                         _chain_db->open(_data_dir /
                                                         "blockchain", _shared_dir, STEEMIT_INIT_SUPPLY, _shared_file_size, chainbase::database::read_write);
@@ -308,8 +305,7 @@ namespace steemit {
                             if (_options->count("read-forward-rpc")) {
                                 try {
                                     _self->_remote_endpoint = _options->at("read-forward-rpc").as<string>();
-                                }
-                                catch (fc::exception &e) {
+                                } catch (fc::exception &e) {
                                     wlog("Error connecting to remote RPC, network api forwarding disabled.  ${e}", ("e", e.to_detail_string()));
                                 }
                             }
@@ -839,7 +835,7 @@ namespace steemit {
 
                 fc::path _data_dir;
                 fc::path _shared_dir;
-                const bpo::variables_map *_options = nullptr;
+                const boost::program_options::variables_map *_options = nullptr;
                 api_access _apiaccess;
 
                 //std::shared_ptr<graphene::db::object_database>   _pending_trx_db;
@@ -892,25 +888,26 @@ namespace steemit {
             default_plugins.push_back("witness");
             default_plugins.push_back("account_history");
             default_plugins.push_back("account_by_key");
+            default_plugins.push_back("snapshot");
             std::string str_default_plugins = boost::algorithm::join(default_plugins, " ");
 
             configuration_file_options.add_options()
-                    ("p2p-endpoint", bpo::value<string>(), "Endpoint for P2P node to listen on")
-                    ("p2p-max-connections", bpo::value<uint32_t>(), "Maxmimum number of incoming connections on P2P endpoint")
-                    ("seed-node,s", bpo::value<vector<string>>()->composing(), "P2P nodes to connect to on startup (may specify multiple times)")
-                    ("checkpoint,c", bpo::value<vector<string>>()->composing(), "Pairs of [BLOCK_NUM,BLOCK_ID] that should be enforced as checkpoints.")
-                    ("shared-file-dir", bpo::value<string>(), "Location of the shared memory file. Defaults to data_dir/blockchain")
-                    ("shared-file-size", bpo::value<string>()->default_value("8G"), "Size of the shared memory file. Default: 8G")
-                    ("rpc-endpoint", bpo::value<string>()->implicit_value("127.0.0.1:8090"), "Endpoint for websocket RPC to listen on")
-                    ("rpc-tls-endpoint", bpo::value<string>()->implicit_value("127.0.0.1:8089"), "Endpoint for TLS websocket RPC to listen on")
-                    ("read-forward-rpc", bpo::value<string>(), "Endpoint to forward write API calls to for a read node")
-                    ("server-pem,p", bpo::value<string>()->implicit_value("server.pem"), "The TLS certificate file for this server")
-                    ("server-pem-password,P", bpo::value<string>()->implicit_value(""), "Password for this certificate")
-                    ("api-user", bpo::value<vector<string>>()->composing(), "API user specification, may be specified multiple times")
-                    ("public-api", bpo::value<vector<string>>()->composing()->default_value(default_apis, str_default_apis), "Set an API to be publicly available, may be specified multiple times")
-                    ("enable-plugin", bpo::value<vector<string>>()->composing()->default_value(default_plugins, str_default_plugins), "Plugin(s) to enable, may be specified multiple times")
-                    ("max-block-age", bpo::value<int32_t>()->default_value(200), "Maximum age of head block when broadcasting tx via API")
-                    ("flush", bpo::value<uint32_t>()->default_value(100000), "Flush shared memory file to disk this many blocks");
+                    ("p2p-endpoint", boost::program_options::value<string>(), "Endpoint for P2P node to listen on")
+                    ("p2p-max-connections", boost::program_options::value<uint32_t>(), "Maxmimum number of incoming connections on P2P endpoint")
+                    ("seed-node,s", boost::program_options::value<vector<string>>()->composing(), "P2P nodes to connect to on startup (may specify multiple times)")
+                    ("checkpoint,c", boost::program_options::value<vector<string>>()->composing(), "Pairs of [BLOCK_NUM,BLOCK_ID] that should be enforced as checkpoints.")
+                    ("shared-file-dir", boost::program_options::value<string>(), "Location of the shared memory file. Defaults to data_dir/blockchain")
+                    ("shared-file-size", boost::program_options::value<string>()->default_value("32G"), "Size of the shared memory file. Default: 32G")
+                    ("rpc-endpoint", boost::program_options::value<string>()->implicit_value("127.0.0.1:8090"), "Endpoint for websocket RPC to listen on")
+                    ("rpc-tls-endpoint", boost::program_options::value<string>()->implicit_value("127.0.0.1:8089"), "Endpoint for TLS websocket RPC to listen on")
+                    ("read-forward-rpc", boost::program_options::value<string>(), "Endpoint to forward write API calls to for a read node")
+                    ("server-pem,p", boost::program_options::value<string>()->implicit_value("server.pem"), "The TLS certificate file for this server")
+                    ("server-pem-password,P", boost::program_options::value<string>()->implicit_value(""), "Password for this certificate")
+                    ("api-user", boost::program_options::value<vector<string>>()->composing(), "API user specification, may be specified multiple times")
+                    ("public-api", boost::program_options::value<vector<string>>()->composing()->default_value(default_apis, str_default_apis), "Set an API to be publicly available, may be specified multiple times")
+                    ("enable-plugin", boost::program_options::value<vector<string>>()->composing()->default_value(default_plugins, str_default_plugins), "Plugin(s) to enable, may be specified multiple times")
+                    ("max-block-age", boost::program_options::value<int32_t>()->default_value(200), "Maximum age of head block when broadcasting tx via API")
+                    ("flush", boost::program_options::value<uint32_t>()->default_value(100000), "Flush shared memory file to disk this many blocks");
             command_line_options.add(configuration_file_options);
             command_line_options.add_options()
                     ("replay-blockchain", "Rebuild object graph by replaying all blocks")
@@ -918,7 +915,7 @@ namespace steemit {
                     ("force-validate", "Force validation of all transactions")
                     ("read-only", "Node will not connect to p2p network and can only read from the chain state")
                     ("check-locks", "Check correctness of chainbase locking")
-                    ("enable-ntp", bpo::value<bool>()->default_value(false), "Enable built-in NTP client");
+                    ("enable-ntp", boost::program_options::value<bool>()->default_value(false), "Enable built-in NTP client");
             command_line_options.add(_cli_options);
             configuration_file_options.add(_cfg_options);
         }

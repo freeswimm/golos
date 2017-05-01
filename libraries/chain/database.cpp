@@ -1,7 +1,3 @@
-#include <openssl/md5.h>
-
-#include <boost/iostreams/device/mapped_file.hpp>
-
 #include <steemit/protocol/steem_operations.hpp>
 
 #include <steemit/chain/block_summary_object.hpp>
@@ -2935,49 +2931,6 @@ namespace steemit {
                     p.maximum_block_size = STEEMIT_MAX_BLOCK_SIZE;
                 });
 
-#ifndef STEEM_BUILD_TESTNET
-                auto snapshot_path = string("./snapshot5392323.json");
-                auto snapshot_file = fc::path(snapshot_path);
-                FC_ASSERT(fc::exists(snapshot_file), "Snapshot file '${file}' was not found.", ("file", snapshot_file));
-
-                std::cout << "Initializing state from snapshot file: "
-                          << snapshot_file.generic_string() << "\n";
-
-                unsigned char digest[MD5_DIGEST_LENGTH];
-                char snapshot_checksum[] = "081b0149f0b2a570ae76b663090cfb0c";
-                char md5hash[33];
-                boost::iostreams::mapped_file_source src(snapshot_path);
-                MD5((unsigned char *)src.data(), src.size(), (unsigned char *)&digest);
-                for (int i = 0; i < 16; i++) {
-                    sprintf(&md5hash[i *
-                                     2], "%02x", (unsigned int)digest[i]);
-                }
-                FC_ASSERT(memcmp(md5hash, snapshot_checksum, 32) ==
-                          0, "Checksum of snapshot [${h}] is not equal [${s}]", ("h", md5hash)("s", snapshot_checksum));
-
-                snapshot_state snapshot = fc::json::from_file(snapshot_file).as<snapshot_state>();
-                for (account_summary &account : snapshot.accounts) {
-                    create<account_object>([&](account_object &a) {
-                        a.name = account.name;
-                        a.memo_key = account.keys.memo_key;
-                        a.json_metadata = "{created_at: 'GENESIS'}";
-                        a.recovery_account = STEEMIT_INIT_MINER_NAME;
-                    });
-
-                    create<account_authority_object>([&](account_authority_object &auth) {
-                        auth.account = account.name;
-                        auth.owner.weight_threshold = 1;
-                        auth.owner = account.keys.owner_key;
-                        auth.active = account.keys.active_key;
-                        auth.posting = account.keys.posting_key;
-                    });
-                }
-                std::cout << "Imported " << snapshot.accounts.size()
-                          << " accounts from "
-                          << snapshot_file.generic_string()
-                          << ".\n";
-#endif
-
                 // Nothing to do
                 create<feed_history_object>([&](feed_history_object &o) {});
                 for (int i = 0; i < 0x10000; i++) {
@@ -3386,7 +3339,6 @@ namespace steemit {
                 for (const flat_set<account_name_type>::value_type &auth : required) {
                     const auto &acnt = get_account(auth);
                     if (!has_hardfork(STEEMIT_HARDFORK_0_17__79)) {
-
                         old_update_account_bandwidth(acnt, trx_size, bandwidth_type::old_forum);
                     }
 
