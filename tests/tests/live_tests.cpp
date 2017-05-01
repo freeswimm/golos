@@ -13,7 +13,7 @@ using namespace steemit;
 using namespace steemit::chain;
 using namespace steemit::protocol;
 
-#ifndef STEEM_BUILD_TESTNET
+#ifndef STEEMIT_BUILD_TESTNET
 
 BOOST_FIXTURE_TEST_SUITE(live_tests, live_database_fixture)
 
