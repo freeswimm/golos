@@ -311,7 +311,7 @@ namespace steemit {
                             (head_block_id())
                             (branches.first.size())
                             (branches.second.size()));
-                    assert(branches.first.back()->previous_id() ==
+                    FC_ASSERT(branches.first.back()->previous_id() ==
                            branches.second.back()->previous_id());
                 }
                 std::vector<block_id_type> result;
@@ -946,7 +946,7 @@ namespace steemit {
 
         void database::clear_pending() {
             try {
-                assert((_pending_tx.size() == 0) ||
+                FC_ASSERT((_pending_tx.size() == 0) ||
                        _pending_tx_session.valid());
                 _pending_tx.clear();
                 _pending_tx_session.reset();
@@ -1318,7 +1318,7 @@ namespace steemit {
                 }
             }
 
-            assert(num_elected + num_miners + num_timeshare ==
+            FC_ASSERT(num_elected + num_miners + num_timeshare ==
                    active_witnesses.size());
 
             modify(wso, [&](witness_schedule_object &_wso) {
@@ -3501,7 +3501,7 @@ namespace steemit {
                 uint32_t missed_blocks = 0;
                 if (head_block_time() != fc::time_point_sec()) {
                     missed_blocks = get_slot_at_time(b.timestamp);
-                    assert(missed_blocks != 0);
+                    FC_ASSERT(missed_blocks != 0);
                     missed_blocks--;
                     for (uint32_t i = 0; i < missed_blocks; ++i) {
                         const witness_object &witness_missed = get_witness(get_scheduled_witness(
@@ -3776,14 +3776,14 @@ namespace steemit {
         }
 
         int database::match(const limit_order_object &new_order, const limit_order_object &old_order, const price &match_price) {
-            assert(new_order.sell_price.quote.symbol ==
+            FC_ASSERT(new_order.sell_price.quote.symbol ==
                    old_order.sell_price.base.symbol);
-            assert(new_order.sell_price.base.symbol ==
+            FC_ASSERT(new_order.sell_price.base.symbol ==
                    old_order.sell_price.quote.symbol);
-            assert(new_order.for_sale > 0 && old_order.for_sale > 0);
-            assert(match_price.quote.symbol ==
+            FC_ASSERT(new_order.for_sale > 0 && old_order.for_sale > 0);
+            FC_ASSERT(match_price.quote.symbol ==
                    new_order.sell_price.base.symbol);
-            assert(match_price.base.symbol ==
+            FC_ASSERT(match_price.base.symbol ==
                    old_order.sell_price.base.symbol);
 
             auto new_order_for_sale = new_order.amount_for_sale();
@@ -3795,7 +3795,7 @@ namespace steemit {
                 old_order_receives = new_order_for_sale;
                 new_order_receives = new_order_for_sale * match_price;
             } else {
-                //This line once read: assert( old_order_for_sale < new_order_for_sale * match_price );
+                //This line once read: FC_ASSERT( old_order_for_sale < new_order_for_sale * match_price );
                 //This assert is not always true -- see trade_amount_equals_zero in operation_tests.cpp
                 //Although new_order_for_sale is greater than old_order_for_sale * match_price, old_order_for_sale == new_order_for_sale * match_price
                 //Removing the assert seems to be safe -- apparently no asset is created or destroyed.
@@ -3806,7 +3806,7 @@ namespace steemit {
             old_order_pays = new_order_receives;
             new_order_pays = old_order_receives;
 
-            assert(new_order_pays == new_order.amount_for_sale() ||
+            FC_ASSERT(new_order_pays == new_order.amount_for_sale() ||
                    old_order_pays == old_order.amount_for_sale());
 
             auto age = head_block_time() - old_order.created;
@@ -3831,7 +3831,7 @@ namespace steemit {
             result |=
                     fill_order(old_order, old_order_pays, old_order_receives)
                             << 1;
-            assert(result != 0);
+            FC_ASSERT(result != 0);
             return result;
         }
 
@@ -4057,7 +4057,7 @@ namespace steemit {
                         props.current_supply += delta + new_vesting;
                         props.virtual_supply += delta + new_vesting;
                         props.total_vesting_fund_steem += new_vesting;
-                        assert(props.current_supply.amount.value >= 0);
+                        FC_ASSERT(props.current_supply.amount.value >= 0);
                         break;
                     }
                     case SBD_SYMBOL:
@@ -4065,7 +4065,7 @@ namespace steemit {
                         props.virtual_supply = props.current_sbd_supply *
                                                get_feed_history().current_median_history +
                                                props.current_supply;
-                        assert(props.current_sbd_supply.amount.value >= 0);
+                        FC_ASSERT(props.current_sbd_supply.amount.value >= 0);
                         break;
                     default:
                         FC_ASSERT(false, "invalid symbol");
@@ -4262,17 +4262,17 @@ namespace steemit {
                 case STEEMIT_HARDFORK_0_1:
                     perform_vesting_share_split(10000);
 #ifdef STEEM_BUILD_TESTNET
-                    {
-                        custom_operation test_op;
-                        string op_msg = "Testnet: Hardfork applied";
-                        test_op.data = vector<char>(op_msg.begin(), op_msg.end());
-                        test_op.required_auths.insert(STEEMIT_INIT_MINER_NAME);
-                        operation op = test_op;   // we need the operation object to live to the end of this scope
-                        operation_notification note(op);
-                        notify_pre_apply_operation(note);
-                        notify_post_apply_operation(note);
-                    }
-                    break;
+                {
+                    custom_operation test_op;
+                    string op_msg = "Testnet: Hardfork applied";
+                    test_op.data = vector<char>(op_msg.begin(), op_msg.end());
+                    test_op.required_auths.insert(STEEMIT_INIT_MINER_NAME);
+                    operation op = test_op;   // we need the operation object to live to the end of this scope
+                    operation_notification note(op);
+                    notify_pre_apply_operation(note);
+                    notify_post_apply_operation(note);
+                }
+                break;
 #endif
                     break;
                 case STEEMIT_HARDFORK_0_2:
