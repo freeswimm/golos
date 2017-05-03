@@ -141,6 +141,17 @@ namespace steemit {
             }
         }
 
+        struct comment_options_extension_validate_visitor {
+            comment_options_extension_validate_visitor() {
+            }
+
+            typedef void result_type;
+
+            void operator()(const comment_payout_beneficiaries &cpb) const {
+                cpb.validate();
+            }
+        };
+
         void comment_options_operation::validate() const {
             validate_account_name(author);
             FC_ASSERT(percent_steem_dollars <=
