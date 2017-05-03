@@ -213,7 +213,7 @@ namespace steemit {
                 FC_ASSERT(
                         ctx.app.get_plugin<steemit::plugin::snapshot::snapshot_plugin>(SNAPSHOT_PLUGIN_NAME)->get_loaded_snapshots().at("snapshot5392323.json") ==
                         "75b7287ca7d39fcfb742ba184f6e2f6debb49cf70f0c7e3dcfffe45b518ee64c", "Steemit accounts snapsnot is invalid");
-                
+
             } catch (fc::assert_exception) {
                 ilog("Snapshots plugin not loaded");
             }
@@ -1115,7 +1115,7 @@ namespace steemit {
             return my->_db.with_read_lock([&]() {
                 std::vector<discussion> result;
 
-#ifndef STEEM_BUILD_LOW_MEMORY_NODE
+#ifndef STEEMIT_BUILD_LOW_MEMORY_NODE
                 FC_ASSERT(limit <= 100);
                 const auto &last_update_idx = my->_db.get_index<comment_index>().indices().get<by_last_update>();
                 auto itr = last_update_idx.begin();
@@ -2020,7 +2020,7 @@ std::vector<discussion> database_api::get_discussions_by_blog(const discussion_q
 std::vector<discussion> database_api::get_discussions_by_comments(const discussion_query &query) const {
     return my->_db.with_read_lock([&]() {
         std::vector<discussion> result;
-#ifndef STEEM_BUILD_LOW_MEMORY_NODE
+#ifndef STEEMIT_BUILD_LOW_MEMORY_NODE
         query.validate();
         FC_ASSERT(query.start_author, "Must get comments for a specific author");
         auto start_author = *(query.start_author);
@@ -2192,7 +2192,7 @@ std::vector<discussion> database_api::get_discussions_by_author_before_date(
     return my->_db.with_read_lock([&]() {
         try {
             std::vector<discussion> result;
-#ifndef STEEM_BUILD_LOW_MEMORY_NODE
+#ifndef STEEMIT_BUILD_LOW_MEMORY_NODE
             FC_ASSERT(limit <= 100);
             result.reserve(limit);
             uint32_t count = 0;
@@ -2393,7 +2393,7 @@ state database_api::get_state(std::string path) const {
                     }
                 } else if (part[1] == "posts" ||
                            part[1] == "comments") {
-#ifndef STEEM_BUILD_LOW_MEMORY_NODE
+#ifndef STEEMIT_BUILD_LOW_MEMORY_NODE
                     int count = 0;
                     const auto &pidx = my->_db.get_index<comment_index>().indices().get<by_author_last_update>();
                     auto itr = pidx.lower_bound(acnt);

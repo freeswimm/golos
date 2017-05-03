@@ -137,9 +137,7 @@ namespace steemit {
             void validate() const;
         };
 
-        typedef static_variant<
-                comment_payout_beneficiaries
-        > comment_options_extension;
+        typedef static_variant<comment_payout_beneficiaries> comment_options_extension;
 
         typedef flat_set<comment_options_extension> comment_options_extensions_type;
 

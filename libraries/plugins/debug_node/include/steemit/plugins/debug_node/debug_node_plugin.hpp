@@ -10,8 +10,8 @@
 
 namespace steemit {
     namespace protocol {
-        class chain_properties;
-        class pow2;
+        struct chain_properties;
+        struct pow2;
         struct signed_block;
     }
 }
@@ -70,7 +70,7 @@ namespace steemit {
                     auto it = _debug_updates.find(head_id);
                     if (it == _debug_updates.end()) {
                         it = _debug_updates.emplace(head_id, std::vector<std::function<void(
-                                chain::database & )>>()).first;
+                                chain::database &)>>()).first;
                     }
                     it->second.emplace_back(callback);
 

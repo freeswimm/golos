@@ -7,7 +7,7 @@
 #include <steemit/chain/evaluators/reward.hpp>
 #include <steemit/chain/evaluators/payout_extension.hpp>
 
-#ifndef STEEM_BUILD_LOW_MEMORY_NODE
+#ifndef STEEMIT_BUILD_LOW_MEMORY_NODE
 
 #include <diff_match_patch.h>
 #include <boost/locale/encoding_utf.hpp>
@@ -182,7 +182,7 @@ namespace steemit {
                 }
 
 
-#ifndef STEEM_BUILD_LOW_MEMORY_NODE
+#ifndef STEEMIT_BUILD_LOW_MEMORY_NODE
                 from_string(acc.json_metadata, o.json_metadata);
 #endif
             });
@@ -273,7 +273,7 @@ namespace steemit {
 
                 acc.received_vesting_shares = o.delegation;
 
-#ifndef STEEM_BUILD_LOW_MEMORY_NODE
+#ifndef STEEMIT_BUILD_LOW_MEMORY_NODE
                 from_string(acc.json_metadata, o.json_metadata);
 #endif
             });
@@ -362,7 +362,7 @@ namespace steemit {
 
                 acc.last_account_update = _db.head_block_time();
 
-#ifndef STEEM_BUILD_LOW_MEMORY_NODE
+#ifndef STEEMIT_BUILD_LOW_MEMORY_NODE
                 if (o.json_metadata.size() > 0) {
                     from_string(acc.json_metadata, o.json_metadata);
                 }
@@ -423,7 +423,7 @@ namespace steemit {
                         p.children--;
                         p.active = now;
                     });
-#ifndef STEEM_BUILD_LOW_MEMORY_NODE
+#ifndef STEEMIT_BUILD_LOW_MEMORY_NODE
                     if (parent->parent_author != STEEMIT_ROOT_POST_PARENT) {
                         parent = &_db.get_comment(parent->parent_author, parent->parent_permlink);
                     } else
@@ -686,7 +686,7 @@ namespace steemit {
                             com.cashout_windows_amount += 1;
                         }
 
-#ifndef STEEM_BUILD_LOW_MEMORY_NODE
+#ifndef STEEMIT_BUILD_LOW_MEMORY_NODE
                         from_string(com.title, o.title);
                         if (o.body.size() < 1024 * 1024 * 128) {
                             from_string(com.body, o.body);
@@ -723,7 +723,7 @@ namespace steemit {
                             p.children++;
                             p.active = now;
                         });
-#ifndef STEEM_BUILD_LOW_MEMORY_NODE
+#ifndef STEEMIT_BUILD_LOW_MEMORY_NODE
                         if (parent->parent_author !=
                             STEEMIT_ROOT_POST_PARENT) {
                             parent = &_db.get_comment(parent->parent_author, parent->parent_permlink);
@@ -768,7 +768,7 @@ namespace steemit {
                             FC_ASSERT(equal(com.parent_permlink, o.parent_permlink), "The permlink of a comment cannot change.");
                         }
 
-#ifndef STEEM_BUILD_LOW_MEMORY_NODE
+#ifndef STEEMIT_BUILD_LOW_MEMORY_NODE
                         if (o.title.size()) {
                             from_string(com.title, o.title);
                         }
@@ -1267,8 +1267,6 @@ namespace steemit {
 
         void vote_evaluator::do_apply(const vote_operation &o) {
             try {
-
-
                 const auto &comment = _db.get_comment(o.author, o.permlink);
                 const account_object &voter = _db.get_account(o.voter);
 
@@ -1285,23 +1283,22 @@ namespace steemit {
                     _db.calculate_discussion_payout_time(comment) ==
                     fc::time_point_sec::maximum()) {
 #ifndef CLEAR_VOTES
-                    const auto& comment_vote_idx = _db.get_index< comment_vote_index >().indices().get< by_comment_voter >();
-auto itr = comment_vote_idx.find( std::make_tuple( comment.id, voter.id ) );
+                    const auto &comment_vote_idx = _db.get_index<comment_vote_index>().indices().get<by_comment_voter>();
+                    auto itr = comment_vote_idx.find(std::make_tuple(comment.id, voter.id));
 
-if( itr == comment_vote_idx.end() )
-_db.create< comment_vote_object >( [&]( comment_vote_object& cvo )
-{
-cvo.voter = voter.id;
-cvo.comment = comment.id;
-cvo.vote_percent = o.weight;
-cvo.last_update = _db.head_block_time();
-});
-else
-_db.modify( *itr, [&]( comment_vote_object& cvo )
-{
-cvo.vote_percent = o.weight;
-cvo.last_update = _db.head_block_time();
-});
+                    if (itr == comment_vote_idx.end()) {
+                        _db.create<comment_vote_object>([&](comment_vote_object &cvo) {
+                            cvo.voter = voter.id;
+                            cvo.comment = comment.id;
+                            cvo.vote_percent = o.weight;
+                            cvo.last_update = _db.head_block_time();
+                        });
+                    } else {
+                        _db.modify(*itr, [&](comment_vote_object &cvo) {
+                            cvo.vote_percent = o.weight;
+                            cvo.last_update = _db.head_block_time();
+                        });
+                    }
 #endif
                     return;
                 }
@@ -2277,7 +2274,7 @@ cvo.last_update = _db.head_block_time();
                 s.from = op.from;
                 s.to = op.to;
                 s.amount = op.amount;
-#ifndef STEEM_BUILD_LOW_MEMORY_NODE
+#ifndef STEEMIT_BUILD_LOW_MEMORY_NODE
                 from_string(s.memo, op.memo);
 #endif
                 s.request_id = op.request_id;

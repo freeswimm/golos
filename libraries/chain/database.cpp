@@ -308,7 +308,7 @@ namespace steemit {
                             (branches.first.size())
                             (branches.second.size()));
                     FC_ASSERT(branches.first.back()->previous_id() ==
-                           branches.second.back()->previous_id());
+                              branches.second.back()->previous_id());
                 }
                 std::vector<block_id_type> result;
                 for (const item_ptr &fork_block : branches.second) {
@@ -943,7 +943,7 @@ namespace steemit {
         void database::clear_pending() {
             try {
                 FC_ASSERT((_pending_tx.size() == 0) ||
-                       _pending_tx_session.valid());
+                          _pending_tx_session.valid());
                 _pending_tx.clear();
                 _pending_tx_session.reset();
             }
@@ -965,7 +965,7 @@ namespace steemit {
 
         inline const void database::push_virtual_operation(const operation &op, bool force) {
             if (!force) {
-#if defined( STEEM_BUILD_LOW_MEMORY_NODE ) && !defined( STEEMIT_BUILD_TESTNET )
+#if defined( STEEMIT_BUILD_LOW_MEMORY_NODE ) && !defined( STEEMIT_BUILD_TESTNET )
                 return;
 #endif
             }
@@ -1315,7 +1315,7 @@ namespace steemit {
             }
 
             FC_ASSERT(num_elected + num_miners + num_timeshare ==
-                   active_witnesses.size());
+                      active_witnesses.size());
 
             modify(wso, [&](witness_schedule_object &_wso) {
                 // active witnesses has exactly STEEMIT_MAX_WITNESSES elements, asserted above
@@ -1941,7 +1941,7 @@ namespace steemit {
 
                             push_virtual_operation(curation_reward_operation(voter.name, reward, c.author, to_string(c.permlink)));
 
-#ifndef STEEM_BUILD_LOW_MEMORY_NODE
+#ifndef STEEMIT_BUILD_LOW_MEMORY_NODE
                             modify(voter, [&](account_object &a) {
                                 a.curation_rewards += claim;
                             });
@@ -2027,7 +2027,7 @@ namespace steemit {
                         push_virtual_operation(author_reward_operation(comment.author, to_string(comment.permlink), sbd_payout.first, sbd_payout.second, vest_created));
                         push_virtual_operation(comment_reward_operation(comment.author, to_string(comment.permlink), to_sbd(asset(claimed_reward, STEEM_SYMBOL))));
 
-#ifndef STEEM_BUILD_LOW_MEMORY_NODE
+#ifndef STEEMIT_BUILD_LOW_MEMORY_NODE
                         modify(comment, [&](comment_object &c) {
                             c.author_rewards += author_tokens;
                         });
@@ -3729,14 +3729,14 @@ namespace steemit {
 
         int database::match(const limit_order_object &new_order, const limit_order_object &old_order, const price &match_price) {
             FC_ASSERT(new_order.sell_price.quote.symbol ==
-                   old_order.sell_price.base.symbol);
+                      old_order.sell_price.base.symbol);
             FC_ASSERT(new_order.sell_price.base.symbol ==
-                   old_order.sell_price.quote.symbol);
+                      old_order.sell_price.quote.symbol);
             FC_ASSERT(new_order.for_sale > 0 && old_order.for_sale > 0);
             FC_ASSERT(match_price.quote.symbol ==
-                   new_order.sell_price.base.symbol);
+                      new_order.sell_price.base.symbol);
             FC_ASSERT(match_price.base.symbol ==
-                   old_order.sell_price.base.symbol);
+                      old_order.sell_price.base.symbol);
 
             auto new_order_for_sale = new_order.amount_for_sale();
             auto old_order_for_sale = old_order.amount_for_sale();
@@ -3759,7 +3759,7 @@ namespace steemit {
             new_order_pays = old_order_receives;
 
             FC_ASSERT(new_order_pays == new_order.amount_for_sale() ||
-                   old_order_pays == old_order.amount_for_sale());
+                      old_order_pays == old_order.amount_for_sale());
 
             auto age = head_block_time() - old_order.created;
             if (!has_hardfork(STEEMIT_HARDFORK_0_12__178) &&
@@ -4214,16 +4214,16 @@ namespace steemit {
                 case STEEMIT_HARDFORK_0_1:
                     perform_vesting_share_split(10000);
 #ifdef STEEMIT_BUILD_TESTNET
-                    {
-                        custom_operation test_op;
-                        string op_msg = "Testnet: Hardfork applied";
-                        test_op.data = vector<char>(op_msg.begin(), op_msg.end());
-                        test_op.required_auths.insert(STEEMIT_INIT_MINER_NAME);
-                        operation op = test_op;   // we need the operation object to live to the end of this scope
-                        operation_notification note(op);
-                        notify_pre_apply_operation(note);
-                        notify_post_apply_operation(note);
-                    }
+                {
+                    custom_operation test_op;
+                    string op_msg = "Testnet: Hardfork applied";
+                    test_op.data = vector<char>(op_msg.begin(), op_msg.end());
+                    test_op.required_auths.insert(STEEMIT_INIT_MINER_NAME);
+                    operation op = test_op;   // we need the operation object to live to the end of this scope
+                    operation_notification note(op);
+                    notify_pre_apply_operation(note);
+                    notify_post_apply_operation(note);
+                }
 #endif
                     break;
                 case STEEMIT_HARDFORK_0_2:
@@ -4664,7 +4664,7 @@ namespace steemit {
             for (auto itr = cidx.begin(); itr != cidx.end(); ++itr) {
                 if (itr->parent_author != STEEMIT_ROOT_POST_PARENT) {
 // Low memory nodes only need immediate child count, full nodes track total children
-#ifdef STEEM_BUILD_LOW_MEMORY_NODE
+#ifdef STEEMIT_BUILD_LOW_MEMORY_NODE
                     modify(get_comment(itr->parent_author, itr->parent_permlink), [&](comment_object &c) {
                         c.children++;
                     });
