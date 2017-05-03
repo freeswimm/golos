@@ -23,8 +23,8 @@
  */
 #pragma once
 
-#include <steemit/app/api_access.hpp>
-#include <steemit/app/api_context.hpp>
+#include <steemit/application/api_access.hpp>
+#include <steemit/application/api_context.hpp>
 #include <steemit/chain/database.hpp>
 
 #include <graphene/net/node.hpp>
@@ -36,7 +36,7 @@
 #include <boost/program_options.hpp>
 
 namespace steemit {
-    namespace app {
+    namespace application {
         namespace detail { class application_impl; }
         using std::string;
 
@@ -132,7 +132,10 @@ namespace steemit {
 
             void get_max_block_age(int32_t &result);
 
+            void connect_to_write_node();
+
             bool _read_only = true;
+            fc::optional<string> _remote_endpoint;
             fc::optional<fc::api<network_broadcast_api>> _remote_net_api;
             fc::optional<fc::api<login_api>> _remote_login;
             fc::http::websocket_connection_ptr _ws_ptr;
@@ -162,4 +165,4 @@ namespace steemit {
         }
 
     }
-} // steemit::app
+} // steemit::application

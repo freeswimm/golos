@@ -68,8 +68,8 @@ if(LOW_MEMORY_NODE)
     message(STATUS "     ")
     message(STATUS "             CONFIGURING FOR LOW MEMORY NODE      ")
     message(STATUS "     ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DIS_LOW_MEM")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DIS_LOW_MEM")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSTEEM_BUILD_LOW_MEMORY_NODE")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DSTEEM_BUILD_LOW_MEMORY_NODE")
 endif()
 
 option(CHAINBASE_CHECK_LOCKING "Check locks in chainbase (ON or OFF)" TRUE)
@@ -199,7 +199,7 @@ if(ENABLE_COVERAGE_TESTING)
     set(CMAKE_CXX_FLAGS "--coverage ${CMAKE_CXX_FLAGS}")
 endif()
 
-# external_plugins needs to be compiled first because libraries/app depends on GOLOSIT_EXTERNAL_PLUGINS being fully populated
+# external_plugins needs to be compiled first because libraries/application depends on GOLOSIT_EXTERNAL_PLUGINS being fully populated
 add_subdirectory(external_plugins)
 add_subdirectory(libraries)
 add_subdirectory(programs)

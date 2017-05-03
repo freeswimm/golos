@@ -183,8 +183,9 @@ namespace steemit {
 
             const hardfork_property_object &get_hardfork_property_object() const;
 
-
             const time_point_sec calculate_discussion_payout_time(const comment_object &comment) const;
+
+            const reward_fund_object &get_reward_fund(const comment_object &c) const;
 
             /**
              *  Deducts fee from the account and the share supply
@@ -338,7 +339,7 @@ namespace steemit {
 
             asset create_vesting(const account_object &to_account, asset steem);
 
-            void adjust_total_payout(const comment_object &a, const asset &sbd, const asset &curator_sbd_value);
+            void adjust_total_payout(const comment_object &a, const asset &sbd, const asset &curator_sbd_value, const asset &beneficiary_value);
 
             void update_witness_schedule();
 
@@ -385,9 +386,9 @@ namespace steemit {
 
             void process_vesting_withdrawals();
 
-            share_type pay_curators(const comment_object &c, share_type max_rewards);
+            share_type cashout_comment_helper(utilities::comment_reward_context &ctx, const comment_object &comment);
 
-            void cashout_comment_helper(utilities::comment_reward_context &ctx, const comment_object &comment);
+            share_type pay_curators(const comment_object &c, share_type &max_rewards);
 
             void process_comment_cashout();
 
@@ -415,7 +416,9 @@ namespace steemit {
 
             asset get_pow_reward() const;
 
-            uint16_t get_curation_rewards_percent() const;
+            uint16_t get_curation_rewards_percent(const comment_object &c) const;
+
+            share_type pay_reward_funds(share_type reward);
 
             void pay_liquidity_reward();
 
@@ -545,6 +548,8 @@ namespace steemit {
             void clear_expired_transactions();
 
             void clear_expired_orders();
+
+            void clear_expired_delegations();
 
             void process_header_extensions(const signed_block &next_block);
 

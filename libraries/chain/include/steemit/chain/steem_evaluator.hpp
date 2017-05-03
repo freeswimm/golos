@@ -23,6 +23,18 @@ namespace steemit {
             void do_apply(const protocol::account_create_operation &o);
         };
 
+        class account_create_with_delegation_evaluator
+                : public steemit::chain::evaluator_impl<account_create_with_delegation_evaluator> {
+        public:
+            typedef protocol::account_create_with_delegation_operation operation_type;
+
+            account_create_with_delegation_evaluator(database &db)
+                    : steemit::chain::evaluator_impl<account_create_with_delegation_evaluator>(db) {
+            }
+
+            void do_apply(const protocol::account_create_with_delegation_operation &o);
+        };
+
         class account_update_evaluator
                 : public steemit::chain::evaluator_impl<account_update_evaluator> {
         public:
@@ -525,6 +537,18 @@ namespace steemit {
             }
 
             void do_apply(const protocol::set_reset_account_operation &o);
+        };
+
+        class delegate_vesting_shares_evaluator
+                : public steemit::chain::evaluator_impl<delegate_vesting_shares_evaluator> {
+        public:
+            typedef protocol::delegate_vesting_shares_operation operation_type;
+
+            delegate_vesting_shares_evaluator(database &db)
+                    : steemit::chain::evaluator_impl<delegate_vesting_shares_evaluator>(db) {
+            }
+
+            void do_apply(const protocol::delegate_vesting_shares_operation &o);
         };
     }
 } // steemit::chain

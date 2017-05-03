@@ -1,16 +1,16 @@
 #pragma once
 
-#include <steemit/app/api.hpp>
+#include <steemit/application/api.hpp>
 #include <steemit/private_message/private_message_plugin.hpp>
 #include <steemit/follow/follow_plugin.hpp>
-#include <steemit/app/steem_api_objects.hpp>
+#include <steemit/application/steem_api_objects.hpp>
 
 #include <graphene/utilities/key_conversion.hpp>
 
 #include <fc/real128.hpp>
 #include <fc/crypto/base58.hpp>
 
-using namespace steemit::app;
+using namespace steemit::application;
 using namespace steemit::chain;
 using namespace graphene::utilities;
 using namespace std;
@@ -18,7 +18,7 @@ using namespace std;
 namespace steemit {
     namespace wallet {
 
-        using steemit::app::discussion;
+        using steemit::application::discussion;
         using namespace steemit::private_message;
 
         typedef uint16_t transaction_handle_type;
@@ -152,7 +152,7 @@ namespace steemit {
             /**
              * Returns the state info associated with the URL
              */
-            app::state get_state(string url);
+            steemit::application::state get_state(string url);
 
             /**
              * Returns vesting withdraw routes for an account.
@@ -396,6 +396,53 @@ namespace steemit {
                     bool broadcast) const;
 
             /**
+             *  This method will genrate new owner, active, and memo keys for the new account which
+             *  will be controlable by this wallet. There is a fee associated with account creation
+             *  that is paid by the creator. The current account creation fee can be found with the
+             *  'info' wallet command.
+             *
+             *  These accounts are created with combination of STEEM and delegated SP
+             *
+             *  @param creator The account creating the new account
+             *  @param steem_fee The amount of the fee to be paid with STEEM
+             *  @param delegated_vests The amount of the fee to be paid with delegation
+             *  @param new_account_name The name of the new account
+             *  @param json_meta JSON Metadata associated with the new account
+             *  @param broadcast true if you wish to broadcast the transaction
+             */
+            annotated_signed_transaction create_account_delegated(string creator, asset steem_fee, asset delegated_vests, string new_account_name, string json_meta, bool broadcast);
+
+            /**
+             * This method is used by faucets to create new accounts for other users which must
+             * provide their desired keys. The resulting account may not be controllable by this
+             * wallet. There is a fee associated with account creation that is paid by the creator.
+             * The current account creation fee can be found with the 'info' wallet command.
+             *
+             * These accounts are created with combination of STEEM and delegated SP
+             *
+             * @param creator The account creating the new account
+             * @param steem_fee The amount of the fee to be paid with STEEM
+             * @param delegated_vests The amount of the fee to be paid with delegation
+             * @param newname The name of the new account
+             * @param json_meta JSON Metadata associated with the new account
+             * @param owner public owner key of the new account
+             * @param active public active key of the new account
+             * @param posting public posting key of the new account
+             * @param memo public memo key of the new account
+             * @param broadcast true if you wish to broadcast the transaction
+             */
+            annotated_signed_transaction create_account_with_keys_delegated(string creator,
+                    asset steem_fee,
+                    asset delegated_vests,
+                    string newname,
+                    string json_meta,
+                    public_key_type owner,
+                    public_key_type active,
+                    public_key_type posting,
+                    public_key_type memo,
+                    bool broadcast) const;
+
+            /**
              * This method updates the keys of an existing account.
              *
              * @param accountname The name of the account
@@ -473,6 +520,16 @@ namespace steemit {
              * @param broadcast true if you wish to broadcast the transaction
              */
             annotated_signed_transaction update_account_memo_key(string account_name, public_key_type key, bool broadcast);
+
+            /**
+ * This method delegates VESTS from one account to another.
+ *
+ * @param delegator The name of the account delegating VESTS
+ * @param delegatee The name of the account receiving VESTS
+ * @param vesting_shares The amount of VESTS to delegate
+ * @param broadcast true if you wish to broadcast the transaction
+ */
+            annotated_signed_transaction delegate_vesting_shares(string delegator, string delegatee, asset vesting_shares, bool broadcast);
 
             /**
              *  This method is used to convert a JSON transaction to its transaction ID.
@@ -1000,6 +1057,7 @@ FC_API(steemit::wallet::wallet_api,
                 (update_account_auth_threshold)
                 (update_account_meta)
                 (update_account_memo_key)
+                (delegate_vesting_shares)
                 (update_witness)
                 (set_voting_proxy)
                 (vote_for_witness)

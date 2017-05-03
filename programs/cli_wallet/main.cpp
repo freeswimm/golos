@@ -37,7 +37,7 @@
 
 #include <graphene/utilities/key_conversion.hpp>
 
-#include <steemit/app/api.hpp>
+#include <steemit/application/api.hpp>
 #include <steemit/wallet/wallet.hpp>
 
 #include <fc/interprocess/signals.hpp>
@@ -57,7 +57,7 @@
 
 
 using namespace graphene::utilities;
-using namespace steemit::app;
+using namespace steemit::application;
 using namespace steemit::chain;
 using namespace steemit::wallet;
 using namespace std;

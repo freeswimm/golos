@@ -51,6 +51,27 @@ namespace steemit {
             }
         }
 
+        void account_create_with_delegation_operation::validate() const {
+            validate_account_name(new_account_name);
+            validate_account_name(creator);
+            FC_ASSERT(is_asset_type(fee, STEEM_SYMBOL), "Account creation fee must be STEEM");
+            FC_ASSERT(is_asset_type(delegation, VESTS_SYMBOL), "Delegation must be VESTS");
+
+            owner.validate();
+            active.validate();
+            posting.validate();
+
+            if (json_metadata.size() > 0) {
+                FC_ASSERT(fc::is_utf8(json_metadata), "JSON Metadata not formatted in UTF8");
+                FC_ASSERT(fc::json::is_valid(json_metadata), "JSON Metadata not valid JSON");
+            }
+
+            FC_ASSERT(fee >=
+                      asset(0, STEEM_SYMBOL), "Account creation fee cannot be negative");
+            FC_ASSERT(delegation >=
+                      asset(0, VESTS_SYMBOL), "Delegation cannot be negative");
+        }
+
         void comment_operation::validate() const {
             FC_ASSERT(title.size() < 256, "Title larger than size limit");
             FC_ASSERT(fc::is_utf8(title), "Title not formatted in UTF8");
@@ -92,6 +113,45 @@ namespace steemit {
             }
         }
 
+        class comment_options_extension_validate_visitor {
+        public:
+            comment_options_extension_validate_visitor() {
+            }
+
+            typedef void result_type;
+
+            void operator()(const comment_payout_beneficiaries &cpb) const {
+                cpb.validate();
+            }
+        };
+
+        void comment_payout_beneficiaries::validate() const {
+            uint32_t sum = 0;
+
+            FC_ASSERT(beneficiaries.size(), "Must specify at least one beneficiary");
+            FC_ASSERT(beneficiaries.size() <
+                      128, "Cannot specify more than 127 beneficiaries."); // Require size serializtion fits in one byte.
+
+            validate_account_name(beneficiaries[0].account);
+            FC_ASSERT(beneficiaries[0].weight <=
+                      STEEMIT_100_PERCENT, "Cannot allocate more than 100% of rewards to one account");
+            sum += beneficiaries[0].weight;
+            FC_ASSERT(sum <=
+                      STEEMIT_100_PERCENT, "Cannot allocate more than 100% of rewards to a comment"); // Have to check incrementally to avoid overflow
+
+            for (size_t i = 1; i < beneficiaries.size(); i++) {
+                validate_account_name(beneficiaries[i].account);
+                FC_ASSERT(beneficiaries[i].weight <=
+                          STEEMIT_100_PERCENT, "Cannot allocate more than 100% of rewards to one account");
+                sum += beneficiaries[i].weight;
+                FC_ASSERT(sum <=
+                          STEEMIT_100_PERCENT, "Cannot allocate more than 100% of rewards to a comment"); // Have to check incrementally to avoid overflow
+                FC_ASSERT(beneficiaries[i - 1] <
+                          beneficiaries[i], "Benficiaries must be specified in sorted order (account ascending)");
+
+            }
+        }
+
         void comment_options_operation::validate() const {
             validate_account_name(author);
             FC_ASSERT(percent_steem_dollars <=
@@ -101,6 +161,10 @@ namespace steemit {
             FC_ASSERT(max_accepted_payout.amount.value >=
                       0, "Cannot accept less than 0 payout");
             validate_permlink(permlink);
+
+            for (auto &e : extensions) {
+                e.visit(comment_options_extension_validate_visitor());
+            }
         }
 
         void delete_comment_operation::validate() const {
@@ -120,8 +184,8 @@ namespace steemit {
 
         void vote_operation::validate() const {
             validate_account_name(voter);
-            validate_account_name(author);\
-      FC_ASSERT(abs(weight) <=
+            validate_account_name(author);
+            FC_ASSERT(abs(weight) <=
                 STEEMIT_100_PERCENT, "Weight is not a STEEMIT percentage");
             validate_permlink(permlink);
         }
@@ -518,6 +582,13 @@ namespace steemit {
                       reset_account, "new reset account cannot be current reset account");
         }
 
-
+        void delegate_vesting_shares_operation::validate() const {
+            validate_account_name(delegator);
+            validate_account_name(delegatee);
+            FC_ASSERT( delegator != delegatee, "You cannot delegate VESTS to yourself" );
+            FC_ASSERT(is_asset_type(vesting_shares, VESTS_SYMBOL), "Delegation must be VESTS");
+            FC_ASSERT(vesting_shares >=
+                      asset(0, VESTS_SYMBOL), "Delegation cannot be negative");
+        }
     }
 } // steemit::protocol

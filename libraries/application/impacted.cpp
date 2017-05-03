@@ -24,10 +24,10 @@
 
 #include <steemit/protocol/authority.hpp>
 
-#include <steemit/app/impacted.hpp>
+#include <steemit/application/impacted.hpp>
 
 namespace steemit {
-    namespace app {
+    namespace application {
 
         using namespace fc;
         using namespace steemit::protocol;
@@ -84,6 +84,11 @@ namespace steemit {
 
             void operator()(const curation_reward_operation &op) {
                 _impacted.insert(op.curator);
+            }
+
+            void operator()(const comment_benefactor_reward_operation &op) {
+                _impacted.insert(op.benefactor);
+                _impacted.insert(op.author);
             }
 
             void operator()(const liquidity_reward_operation &op) {
@@ -216,6 +221,15 @@ namespace steemit {
             }
 
             void operator()(const decline_voting_rights_operation &op) {
+                _impacted.insert(op.account);
+            }
+
+            void operator()(const delegate_vesting_shares_operation &op) {
+                _impacted.insert(op.delegator);
+                _impacted.insert(op.delegatee);
+            }
+
+            void operator()(const return_vesting_delegation_operation &op) {
                 _impacted.insert(op.account);
             }
 

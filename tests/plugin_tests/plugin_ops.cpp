@@ -2,7 +2,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <steemit/app/plugin.hpp>
+#include <steemit/application/plugin.hpp>
 #include <steemit/chain/generic_custom_operation_interpreter.hpp>
 #include <steemit/chain/account_object.hpp>
 
@@ -13,7 +13,7 @@ using namespace steemit::chain::test;
 /*
 namespace steemit { namespace plugin_tests {
 
-using namespace steemit::app;
+using namespace steemit::application;
 using namespace steemit::chain;
 
 struct test_a_operation : base_operation
@@ -44,8 +44,8 @@ class test_plugin : public plugin
       std::shared_ptr< generic_custom_operation_interpreter< test_op > > _evaluator_registry;
 };
 
-DEFINE_PLUGIN_EVALUATOR( test_plugin, test_a_operation, test_a );
-DEFINE_PLUGIN_EVALUATOR( test_plugin, test_b_operation, test_b );
+STEEMIT_STEEMIT_DEFINE_PLUGIN_EVALUATOR( test_plugin, test_a_operation, test_a );
+STEEMIT_STEEMIT_DEFINE_PLUGIN_EVALUATOR( test_plugin, test_b_operation, test_b );
 
 void test_a_evaluator::do_apply( const test_a_operation& o )
 {

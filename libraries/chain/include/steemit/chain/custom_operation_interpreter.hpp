@@ -11,7 +11,7 @@ namespace graphene {
 
 namespace steemit {
     namespace protocol {
-        class custom_json_operation;
+        struct custom_json_operation;
     }
 }
 

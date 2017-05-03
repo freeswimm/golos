@@ -24,7 +24,7 @@
 
 #include <steemit/private_message/private_message_evaluators.hpp>
 
-#include <steemit/app/impacted.hpp>
+#include <steemit/application/impacted.hpp>
 
 #include <steemit/chain/index.hpp>
 #include <steemit/chain/generic_custom_operation_interpreter.hpp>
@@ -99,7 +99,7 @@ namespace steemit {
             }
         }
 
-        private_message_plugin::private_message_plugin(application *app)
+        private_message_plugin::private_message_plugin(application::application *app)
                 : plugin(app),
                   my(new detail::private_message_plugin_impl(*this)) {
         }
@@ -128,7 +128,7 @@ namespace steemit {
             app().register_api_factory<private_message_api>("private_message_api");
 
             typedef pair<string, string> pairstring;
-            LOAD_VALUE_SET(options, "pm-accounts", my->_tracked_accounts, pairstring);
+            STEEMIT_LOAD_VALUE_SET(options, "pm-accounts", my->_tracked_accounts, pairstring);
         }
 
         vector<message_api_obj> private_message_api::get_inbox(string to, time_point newest, uint16_t limit) const {

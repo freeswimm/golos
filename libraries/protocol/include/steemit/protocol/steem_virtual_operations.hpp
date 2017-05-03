@@ -8,8 +8,8 @@
 
 namespace steemit {
     namespace protocol {
-
-        struct author_reward_operation : public virtual_operation {
+        class author_reward_operation : public virtual_operation {
+        public:
             author_reward_operation() {
             }
 
@@ -26,7 +26,8 @@ namespace steemit {
         };
 
 
-        struct curation_reward_operation : public virtual_operation {
+        class curation_reward_operation : public virtual_operation {
+        public:
             curation_reward_operation() {
             }
 
@@ -42,7 +43,8 @@ namespace steemit {
         };
 
 
-        struct comment_reward_operation : public virtual_operation {
+        class comment_reward_operation : public virtual_operation {
+        public:
             comment_reward_operation() {
             }
 
@@ -56,7 +58,8 @@ namespace steemit {
         };
 
 
-        struct liquidity_reward_operation : public virtual_operation {
+        class liquidity_reward_operation : public virtual_operation {
+        public:
             liquidity_reward_operation(string o = string(), asset p = asset())
                     : owner(o), payout(p) {
             }
@@ -66,7 +69,8 @@ namespace steemit {
         };
 
 
-        struct interest_operation : public virtual_operation {
+        class interest_operation : public virtual_operation {
+        public:
             interest_operation(const string &o = "", const asset &i = asset(0, SBD_SYMBOL))
                     : owner(o), interest(i) {
             }
@@ -76,7 +80,8 @@ namespace steemit {
         };
 
 
-        struct fill_convert_request_operation : public virtual_operation {
+        class fill_convert_request_operation : public virtual_operation {
+        public:
             fill_convert_request_operation() {
             }
 
@@ -90,8 +95,8 @@ namespace steemit {
             asset amount_out;
         };
 
-
-        struct fill_vesting_withdraw_operation : public virtual_operation {
+        class fill_vesting_withdraw_operation : public virtual_operation {
+        public:
             fill_vesting_withdraw_operation() {
             }
 
@@ -106,8 +111,8 @@ namespace steemit {
             asset deposited;
         };
 
-
-        struct shutdown_witness_operation : public virtual_operation {
+        class shutdown_witness_operation : public virtual_operation {
+        public:
             shutdown_witness_operation() {
             }
 
@@ -117,8 +122,8 @@ namespace steemit {
             account_name_type owner;
         };
 
-
-        struct fill_order_operation : public virtual_operation {
+        class fill_order_operation : public virtual_operation {
+        public:
             fill_order_operation() {
             }
 
@@ -136,8 +141,8 @@ namespace steemit {
             asset open_pays;
         };
 
-
-        struct fill_transfer_from_savings_operation : public virtual_operation {
+        class fill_transfer_from_savings_operation : public virtual_operation {
+        public:
             fill_transfer_from_savings_operation() {
             }
 
@@ -152,7 +157,8 @@ namespace steemit {
             string memo;
         };
 
-        struct hardfork_operation : public virtual_operation {
+        class hardfork_operation : public virtual_operation {
+        public:
             hardfork_operation() {
             }
 
@@ -162,7 +168,8 @@ namespace steemit {
             uint32_t hardfork_id = 0;
         };
 
-        struct comment_payout_update_operation : public virtual_operation {
+        class comment_payout_update_operation : public virtual_operation {
+        public:
             comment_payout_update_operation() {
             }
 
@@ -174,6 +181,33 @@ namespace steemit {
             string permlink;
         };
 
+        class return_vesting_delegation_operation : public virtual_operation {
+        public:
+            return_vesting_delegation_operation() {
+            }
+
+            return_vesting_delegation_operation(const account_name_type &a, const asset &v)
+                    : account(a), vesting_shares(v) {
+            }
+
+            account_name_type account;
+            asset vesting_shares;
+        };
+
+        class comment_benefactor_reward_operation : public virtual_operation {
+        public:
+            comment_benefactor_reward_operation() {
+            }
+
+            comment_benefactor_reward_operation(const account_name_type &b, const account_name_type &a, const string &p, const asset &r)
+                    : benefactor(b), author(a), permlink(p), reward(r) {
+            }
+
+            account_name_type benefactor;
+            account_name_type author;
+            string permlink;
+            asset reward;
+        };
     }
 } //steemit::protocol
 
@@ -189,3 +223,5 @@ FC_REFLECT(steemit::protocol::fill_order_operation, (current_owner)(current_orde
 FC_REFLECT(steemit::protocol::fill_transfer_from_savings_operation, (from)(to)(amount)(request_id)(memo))
 FC_REFLECT(steemit::protocol::hardfork_operation, (hardfork_id))
 FC_REFLECT(steemit::protocol::comment_payout_update_operation, (author)(permlink))
+FC_REFLECT(steemit::protocol::return_vesting_delegation_operation, (account)(vesting_shares))
+FC_REFLECT(steemit::protocol::comment_benefactor_reward_operation, (benefactor)(author)(permlink)(reward))
