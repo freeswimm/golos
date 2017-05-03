@@ -92,6 +92,7 @@ namespace steemit {
 
         struct comment_payout_extension_operation
                 : public base_operation {
+            account_name_type payer;
             account_name_type author;
             string permlink;
 
@@ -102,13 +103,13 @@ namespace steemit {
 
             void get_required_active_authorities(flat_set<account_name_type> &a) const {
                 if (amount && amount->symbol == SBD_SYMBOL) {
-                    a.insert(author);
+                    a.insert(payer);
                 }
             }
 
             void get_required_owner_authorities(flat_set<account_name_type> &a) const {
                 if (amount && amount->symbol == SBD_SYMBOL) {
-                    a.insert(author);
+                    a.insert(payer);
                 }
             }
         };
@@ -1124,7 +1125,7 @@ FC_REFLECT(steemit::protocol::witness_update_operation, (owner)(url)(block_signi
 FC_REFLECT(steemit::protocol::account_witness_vote_operation, (account)(witness)(approve));
 FC_REFLECT(steemit::protocol::account_witness_proxy_operation, (account)(proxy));
 FC_REFLECT(steemit::protocol::comment_operation, (parent_author)(parent_permlink)(author)(permlink)(title)(body)(json_metadata));
-FC_REFLECT(steemit::protocol::comment_payout_extension_operation, (author)(permlink)(extension_time)(amount));
+FC_REFLECT(steemit::protocol::comment_payout_extension_operation, (payer)(author)(permlink)(extension_time)(amount));
 FC_REFLECT(steemit::protocol::vote_operation, (voter)(author)(permlink)(weight));
 FC_REFLECT(steemit::protocol::custom_operation, (required_auths)(id)(data));
 FC_REFLECT(steemit::protocol::custom_json_operation, (required_auths)(required_posting_auths)(id)(json));

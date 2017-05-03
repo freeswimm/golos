@@ -167,7 +167,7 @@ namespace steemit {
             }
 
             void do_apply(const protocol::comment_payout_extension_operation &o) {
-                const account_object &from_account = this->_db.get_account(o.author);
+                const account_object &from_account = this->_db.get_account(o.payer);
                 const account_object &to_account = this->_db.get_account(STEEMIT_NULL_ACCOUNT);
 
                 if (from_account.active_challenged) {

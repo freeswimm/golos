@@ -92,6 +92,7 @@ namespace steemit {
         }
 
         void comment_payout_extension_operation::validate() const {
+            validate_account_name(payer);
             validate_account_name(author);
             validate_permlink(permlink);
 
@@ -112,18 +113,6 @@ namespace steemit {
                           fc::time_point_sec(0), "Payout window extension cannot be extended for 0 seconds");
             }
         }
-
-        class comment_options_extension_validate_visitor {
-        public:
-            comment_options_extension_validate_visitor() {
-            }
-
-            typedef void result_type;
-
-            void operator()(const comment_payout_beneficiaries &cpb) const {
-                cpb.validate();
-            }
-        };
 
         void comment_payout_beneficiaries::validate() const {
             uint32_t sum = 0;
@@ -186,7 +175,7 @@ namespace steemit {
             validate_account_name(voter);
             validate_account_name(author);
             FC_ASSERT(abs(weight) <=
-                STEEMIT_100_PERCENT, "Weight is not a STEEMIT percentage");
+                      STEEMIT_100_PERCENT, "Weight is not a STEEMIT percentage");
             validate_permlink(permlink);
         }
 
@@ -585,7 +574,8 @@ namespace steemit {
         void delegate_vesting_shares_operation::validate() const {
             validate_account_name(delegator);
             validate_account_name(delegatee);
-            FC_ASSERT( delegator != delegatee, "You cannot delegate VESTS to yourself" );
+            FC_ASSERT(delegator !=
+                      delegatee, "You cannot delegate VESTS to yourself");
             FC_ASSERT(is_asset_type(vesting_shares, VESTS_SYMBOL), "Delegation must be VESTS");
             FC_ASSERT(vesting_shares >=
                       asset(0, VESTS_SYMBOL), "Delegation cannot be negative");
