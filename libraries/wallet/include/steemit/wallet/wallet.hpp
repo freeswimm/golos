@@ -1097,6 +1097,8 @@ FC_API(steemit::wallet::wallet_api,
                 (create_order)
                 (cancel_order)
                 (post_comment)
+                (extend_payout_by_cost)
+                (extend_payout_by_time)
                 (vote)
                 (set_transaction_expiration)
                 (challenge)
