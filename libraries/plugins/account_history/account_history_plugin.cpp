@@ -95,7 +95,7 @@ namespace steemit {
                 void operator()(const comment_operation &) const {
                 }
 
-                void operator()(const comment_payout_extension_operation &) const {
+                void operator()(const comment_payout_extension_operation &op) const {
                     operation_visitor::operator()(op);
                 }
 
