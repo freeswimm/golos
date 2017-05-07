@@ -164,8 +164,14 @@ namespace steemit {
                 }
             }
 
+            asset account_creation_fee = o.fee;
+
+            if (_db.has_hardfork(STEEMIT_HARDFORK_0_17_108)) {
+                account_creation_fee.amount /= o.new_account_name.size();
+            }
+
             _db.modify(creator, [&](account_object &c) {
-                c.balance -= o.fee;
+                c.balance -= account_creation_fee;
             });
 
             const auto &new_account = _db.create<account_object>([&](account_object &acc) {
@@ -195,8 +201,8 @@ namespace steemit {
                 auth.last_owner_update = fc::time_point_sec::min();
             });
 
-            if (o.fee.amount > 0) {
-                _db.create_vesting(new_account, o.fee);
+            if (account_creation_fee.amount > 0) {
+                _db.create_vesting(new_account, account_creation_fee);
             }
         }
 
