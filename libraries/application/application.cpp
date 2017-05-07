@@ -897,7 +897,7 @@ namespace steemit {
                     ("seed-node,s", boost::program_options::value<vector<string>>()->composing(), "P2P nodes to connect to on startup (may specify multiple times)")
                     ("checkpoint,c", boost::program_options::value<vector<string>>()->composing(), "Pairs of [BLOCK_NUM,BLOCK_ID] that should be enforced as checkpoints.")
                     ("shared-file-dir", boost::program_options::value<string>(), "Location of the shared memory file. Defaults to data_dir/blockchain")
-                    ("shared-file-size", boost::program_options::value<string>()->default_value("32G"), "Size of the shared memory file. Default: 32G")
+                    ("shared-file-size", boost::program_options::value<string>()->default_value("8G"), "Size of the shared memory file. Default: 8G")
                     ("rpc-endpoint", boost::program_options::value<string>()->implicit_value("127.0.0.1:8090"), "Endpoint for websocket RPC to listen on")
                     ("rpc-tls-endpoint", boost::program_options::value<string>()->implicit_value("127.0.0.1:8089"), "Endpoint for TLS websocket RPC to listen on")
                     ("read-forward-rpc", boost::program_options::value<string>(), "Endpoint to forward write API calls to for a read node")
