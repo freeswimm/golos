@@ -21,8 +21,7 @@ namespace steemit {
 
             using fc::uint128_t;
 
-            class comment_reward_context {
-            public:
+            struct comment_reward_context {
                 share_type rshares;
                 uint16_t reward_weight = 0;
                 asset max_sbd;
