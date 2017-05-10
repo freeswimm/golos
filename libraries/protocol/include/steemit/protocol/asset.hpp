@@ -8,8 +8,7 @@ namespace steemit {
 
         typedef uint64_t asset_symbol_type;
 
-        class asset {
-        public:
+        struct asset {
             asset(share_type a = 0, asset_symbol_type id = STEEM_SYMBOL)
                     : amount(a), symbol(id) {
             }
@@ -88,8 +87,7 @@ namespace steemit {
 
         };
 
-        class price {
-        public:
+        struct price {
             price(const asset &base = asset(), const asset quote = asset())
                     : base(base), quote(quote) {
             }

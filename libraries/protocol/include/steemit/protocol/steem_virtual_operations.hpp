@@ -8,8 +8,7 @@
 
 namespace steemit {
     namespace protocol {
-        class author_reward_operation : public virtual_operation {
-        public:
+        struct author_reward_operation : public virtual_operation {
             author_reward_operation() {
             }
 
@@ -26,8 +25,7 @@ namespace steemit {
         };
 
 
-        class curation_reward_operation : public virtual_operation {
-        public:
+        struct curation_reward_operation : public virtual_operation {
             curation_reward_operation() {
             }
 
@@ -43,8 +41,7 @@ namespace steemit {
         };
 
 
-        class comment_reward_operation : public virtual_operation {
-        public:
+        struct comment_reward_operation : public virtual_operation {
             comment_reward_operation() {
             }
 
@@ -58,8 +55,7 @@ namespace steemit {
         };
 
 
-        class liquidity_reward_operation : public virtual_operation {
-        public:
+        struct liquidity_reward_operation : public virtual_operation {
             liquidity_reward_operation(string o = string(), asset p = asset())
                     : owner(o), payout(p) {
             }
@@ -69,8 +65,7 @@ namespace steemit {
         };
 
 
-        class interest_operation : public virtual_operation {
-        public:
+        struct interest_operation : public virtual_operation {
             interest_operation(const string &o = "", const asset &i = asset(0, SBD_SYMBOL))
                     : owner(o), interest(i) {
             }
@@ -80,8 +75,7 @@ namespace steemit {
         };
 
 
-        class fill_convert_request_operation : public virtual_operation {
-        public:
+        struct fill_convert_request_operation : public virtual_operation {
             fill_convert_request_operation() {
             }
 
@@ -95,8 +89,7 @@ namespace steemit {
             asset amount_out;
         };
 
-        class fill_vesting_withdraw_operation : public virtual_operation {
-        public:
+        struct fill_vesting_withdraw_operation : public virtual_operation {
             fill_vesting_withdraw_operation() {
             }
 
@@ -111,8 +104,7 @@ namespace steemit {
             asset deposited;
         };
 
-        class shutdown_witness_operation : public virtual_operation {
-        public:
+        struct shutdown_witness_operation : public virtual_operation {
             shutdown_witness_operation() {
             }
 
@@ -122,8 +114,7 @@ namespace steemit {
             account_name_type owner;
         };
 
-        class fill_order_operation : public virtual_operation {
-        public:
+        struct fill_order_operation : public virtual_operation {
             fill_order_operation() {
             }
 
@@ -141,8 +132,7 @@ namespace steemit {
             asset open_pays;
         };
 
-        class fill_transfer_from_savings_operation : public virtual_operation {
-        public:
+        struct fill_transfer_from_savings_operation : public virtual_operation {
             fill_transfer_from_savings_operation() {
             }
 
@@ -157,8 +147,7 @@ namespace steemit {
             string memo;
         };
 
-        class hardfork_operation : public virtual_operation {
-        public:
+        struct hardfork_operation : public virtual_operation {
             hardfork_operation() {
             }
 
@@ -168,8 +157,7 @@ namespace steemit {
             uint32_t hardfork_id = 0;
         };
 
-        class comment_payout_update_operation : public virtual_operation {
-        public:
+        struct comment_payout_update_operation : public virtual_operation {
             comment_payout_update_operation() {
             }
 
@@ -181,8 +169,7 @@ namespace steemit {
             string permlink;
         };
 
-        class return_vesting_delegation_operation : public virtual_operation {
-        public:
+        struct return_vesting_delegation_operation : public virtual_operation {
             return_vesting_delegation_operation() {
             }
 
@@ -194,8 +181,7 @@ namespace steemit {
             asset vesting_shares;
         };
 
-        class comment_benefactor_reward_operation : public virtual_operation {
-        public:
+        struct comment_benefactor_reward_operation : public virtual_operation {
             comment_benefactor_reward_operation() {
             }
 
