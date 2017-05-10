@@ -477,13 +477,11 @@ namespace steemit {
         };
 
         void comment_options_evaluator::do_apply(const comment_options_operation &o) {
-
             if (_db.has_hardfork(STEEMIT_HARDFORK_0_10)) {
                 const account_object &auth = _db.get_account(o.author);
                 FC_ASSERT(!(auth.owner_challenged ||
                             auth.active_challenged), "Operation cannot be processed because account is currently challenged.");
             }
-
 
             const auto &comment = _db.get_comment(o.author, o.permlink);
             if (!o.allow_curation_rewards || !o.allow_votes ||
