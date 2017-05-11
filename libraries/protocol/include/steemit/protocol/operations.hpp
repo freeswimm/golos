@@ -39,7 +39,6 @@ namespace steemit {
 
                 delete_comment_operation,
                 custom_json_operation,
-                comment_payout_extension_operation,
                 comment_options_operation,
                 set_withdraw_vesting_route_operation,
                 limit_order_create2_operation,
@@ -62,6 +61,7 @@ namespace steemit {
                 set_reset_account_operation,
                 delegate_vesting_shares_operation,
                 account_create_with_delegation_operation,
+                comment_payout_extension_operation,
 
                 /// virtual operations below this point
                 fill_convert_request_operation,
