@@ -166,7 +166,7 @@ namespace steemit {
 
             asset account_creation_fee = o.fee;
 
-            if (_db.has_hardfork(STEEMIT_HARDFORK_0_17_108)) {
+            if (_db.has_hardfork(STEEMIT_HARDFORK_0_17__108)) {
                 account_creation_fee.amount /= o.new_account_name.size();
             }
 
